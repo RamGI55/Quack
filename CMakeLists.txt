@@ -29,6 +29,10 @@ add_executable(main src/main.cpp
         src/Core/System.h
         src/Core/SystemManager.h
         src/Core/Coordinator.h
+        src/Component/SpritesComponent.h
+        src/Component/SoundComponent.h
+        src/Component/PlayerComponent.h
+        src/Component/CollisionComponent.h
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
