@@ -10,36 +10,36 @@ EntityManager::EntityManager()
     // iterating the all entities. using uint_32 to matching as the type of the entity.
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
     {
-        AvailableEntities_.push(entity);
+        m_AvailableEntities.push(entity);
     }
 }
 
 Entity EntityManager::CreateEntity()
 {
-    assert(LivingEntityCount_ < MAX_ENTITIES && "Too many entities");
+    assert(m_LivingEntityCount < MAX_ENTITIES && "Too many entities");
 
-    Entity id = AvailableEntities_.front();
-    AvailableEntities_.pop();
-    ++LivingEntityCount_;
+    Entity id = m_AvailableEntities.front();
+    m_AvailableEntities.pop();
+    ++m_LivingEntityCount;
 
     return id;
 }
 
 void EntityManager::DestroyEntity(Entity inEntity)
 {
-    assert(LivingEntityCount_ > 0 && "No Entities to delete");
+    assert(m_LivingEntityCount > 0 && "No Entities to delete");
 
-    AvailableEntities_.push(inEntity);
-    --LivingEntityCount_;
+    m_AvailableEntities.push(inEntity);
+    --m_LivingEntityCount;
 }
 
 Signature EntityManager::GetSignature(Entity inEntity)
 {
-    return Signatures_[inEntity];
+    return m_Signatures[inEntity];
 }
 
 void EntityManager::SetSignature(Entity inEntity, Signature inSignature)
 {
-    Signatures_[inEntity] = inSignature;
+    m_Signatures[inEntity] = inSignature;
 }
 

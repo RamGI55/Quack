@@ -14,83 +14,83 @@ class Coordinator
 public:
     void Init()
     {
-        ComponentManager_   = std::make_unique<ComponentManager>();
-        EntityManager_      = std::make_unique<EntityManager>();
-        SystemManager_      = std::make_unique<SystemManager>();
+        m_ComponentManager   = std::make_unique<ComponentManager>();
+        m_EntityManager      = std::make_unique<EntityManager>();
+        m_SystemManager      = std::make_unique<SystemManager>();
     }
 
     // Entity Coordinators
-    Entity CreateEntity()
+    [[nodiscard]] Entity CreateEntity() const
     {
-        return EntityManager_->CreateEntity();
+        return m_EntityManager->CreateEntity();
     }
 
-    void DestroyEntity(Entity inEntity)
+    void DestroyEntity(const Entity inEntity) const
     {
-        EntityManager_->DestroyEntity(inEntity);
-        ComponentManager_->OnEntityDestroyed(inEntity);
-        SystemManager_->OnEntityDestroyed(inEntity);
+        m_EntityManager->DestroyEntity(inEntity);
+        m_ComponentManager->OnEntityDestroyed(inEntity);
+        m_SystemManager->OnEntityDestroyed(inEntity);
     }
 
     // Component Coordinators
     template<typename T>
-    void RegisterComponent()
+    void RegisterComponent() const
     {
-        ComponentManager_->RegisterComponent<T>();
+        m_ComponentManager->RegisterComponent<T>();
     }
 
     template<typename T>
-    void AddComponent(Entity inEntity, T inComponentType)
+    void AddComponent(const Entity inEntity, T inComponentType)
     {
-        ComponentManager_->AddComponent<T>(inEntity, inComponentType);
-        auto signature = EntityManager_->GetSignature(inEntity);
-        signature.set(ComponentManager_->GetComponentType<T>(), true);
-        EntityManager_->SetSignature(inEntity, signature);
+        m_ComponentManager->AddComponent<T>(inEntity, inComponentType);
+        auto signature = m_EntityManager->GetSignature(inEntity);
+        signature.set(m_ComponentManager->GetComponentType<T>(), true);
+        m_EntityManager->SetSignature(inEntity, signature);
 
-        SystemManager_->OnEntitySignatureChanged(inEntity, signature);
+        m_SystemManager->OnEntitySignatureChanged(inEntity, signature);
     }
 
     template<typename T>
-    void RemoveComponent(Entity inEntity)
+    void RemoveComponent(const Entity inEntity) const
     {
-        ComponentManager_->RemoveComponent<T>(inEntity);
-        auto signature = EntityManager_->GetSignature(inEntity);
-        signature.set(ComponentManager_->GetComponentType<T>(), false);
-        EntityManager_->SetSignature(inEntity, signature);
+        m_ComponentManager->RemoveComponent<T>(inEntity);
+        auto signature = m_EntityManager->GetSignature(inEntity);
+        signature.set(m_ComponentManager->GetComponentType<T>(), false);
+        m_EntityManager->SetSignature(inEntity, signature);
 
-        SystemManager_->OnEntitySignatureChanged(inEntity, signature);
+        m_SystemManager->OnEntitySignatureChanged(inEntity, signature);
     }
 
     template<typename T>
     T& GetComponent (Entity inEntity)
     {
-        return ComponentManager_->GetComponent<T>(inEntity);
+        return m_ComponentManager->GetComponent<T>(inEntity);
     }
 
     template<typename T>
-    ComponentType GetComponentType()
+    [[nodiscard]] ComponentType GetComponentType() const
     {
-        return ComponentManager_->GetComponentType<T>();
+        return m_ComponentManager->GetComponentType<T>();
     }
 
     // System Coordinator
     template<typename T>
     std::shared_ptr<T> RegisterSystem()
     {
-        return SystemManager_->RegisterSystem<T>();
+        return m_SystemManager->RegisterSystem<T>();
     }
 
     template<typename T>
-    void SetSystemSignature(Signature inSignature)
+    void SetSystemSignature(const Signature inSignature) const
     {
-        SystemManager_->SetSignature<T>(inSignature);
+        m_SystemManager->SetSignature<T>(inSignature);
     }
 
 
 private:
-    std::unique_ptr<ComponentManager> ComponentManager_;
-    std::unique_ptr<EntityManager> EntityManager_;
-    std::unique_ptr<SystemManager> SystemManager_;
+    std::unique_ptr<ComponentManager> m_ComponentManager;
+    std::unique_ptr<EntityManager> m_EntityManager;
+    std::unique_ptr<SystemManager> m_SystemManager;
 };
 
 

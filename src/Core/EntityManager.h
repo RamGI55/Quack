@@ -18,11 +18,11 @@ public:
     void SetSignature(Entity inEntity, Signature inSignature);
 
 private:
-    std::queue<Entity> AvailableEntities_{};
+    std::queue<Entity> m_AvailableEntities{};
 
-    std::array<Signature, MAX_ENTITIES> Signatures_{};
+    std::array<Signature, MAX_ENTITIES> m_Signatures{};
 
-    uint32_t LivingEntityCount_{};
+    uint32_t m_LivingEntityCount{};
 };
 
 #endif //DUCKDUCKROAD_ENTITYMANAGER_H

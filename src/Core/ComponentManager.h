@@ -20,13 +20,13 @@ public:
     {
         const char* TypeName= typeid(T).name();
 
-        assert(mComponentTypes_.find(TypeName) == mComponentTypes_.end() && "The Component Type has more than one types");
+        assert(m_ComponentTypes_.find(TypeName) == m_ComponentTypes_.end() && "The Component Type has more than one types");
 
-        mComponentTypes_.insert({TypeName, NextComponentType_});
+        m_ComponentTypes_.insert({TypeName, m_NextComponentType_});
 
-        mComponentArrays_.insert({TypeName, std::make_shared<ComponentArray<T>>()});
+        m_ComponentArrays_.insert({TypeName, std::make_shared<ComponentArray<T>>()});
 
-        ++NextComponentType_;
+        ++m_NextComponentType_;
     }
 
     template<typename T>
@@ -34,9 +34,9 @@ public:
     {
         const char* TypeName = typeid(T).name();
 
-        assert(mComponentTypes_.find(TypeName) != mComponentTypes_.end() && "Cannot Find the Component.");
+        assert(m_ComponentTypes_.find(TypeName) != m_ComponentTypes_.end() && "Cannot Find the Component.");
 
-        return mComponentTypes_[TypeName];
+        return m_ComponentTypes_[TypeName];
     }
 
     template <typename T>
@@ -57,9 +57,9 @@ public:
         return GetComponentArray<T>()->GetData(inEntity);
     }
 
-    void OnEntityDestroyed(Entity inEntity) const
+    void OnEntityDestroyed(Entity inEntity)
     {
-        for (auto const& pair : mComponentArrays_)
+        for (auto const& pair : m_ComponentArrays_)
         {
             auto const& component = pair.second;
 
@@ -68,19 +68,19 @@ public:
     }
 
 private:
-    std::unordered_map<const char*, ComponentType> mComponentTypes_;
-    std::unordered_map<const char*, std::shared_ptr<IComponentArray>> mComponentArrays_;
-    ComponentType NextComponentType_ = 0;
+    std::unordered_map<const char*, ComponentType> m_ComponentTypes_;
+    std::unordered_map<const char*, std::shared_ptr<IComponentArray>> m_ComponentArrays_;
+    ComponentType m_NextComponentType_ = 0;
 
     template<typename T>
     std::shared_ptr<ComponentArray<T>> GetComponentArray()
     {
         const char* TypeName = typeid(T).name();
 
-        assert(mComponentTypes_.find(TypeName) != mComponentTypes_.end() && "Cannot Find the Component.");
+        assert(m_ComponentTypes_.find(TypeName) != m_ComponentTypes_.end() && "Cannot Find the Component.");
 
         // returns the pointer from the const char array representation of a Type T => using it as the unique key into a map of Component Types.
-        return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays_[TypeName])();
+        return std::static_pointer_cast<ComponentArray<T>>(m_ComponentArrays_[TypeName])();
 
     }
 };

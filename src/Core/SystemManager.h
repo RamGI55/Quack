@@ -20,10 +20,10 @@ public:
     {
         const char* TypeName = typeid(T).name();
 
-        assert(SystemsMap_.find(TypeName) == SystemsMap_.end() && "The system has already been registered.");
+        assert(m_SystemsMap.find(TypeName) == m_SystemsMap.end() && "The system has already been registered.");
 
         auto system = std::make_shared<T>(this);
-        SystemsMap_.insert({TypeName, system});
+        m_SystemsMap.insert({TypeName, system});
 
         return system;
     }
@@ -33,14 +33,14 @@ public:
     {
         const char* TypeName = typeid(T).name();
 
-        assert(SystemsMap_.find(TypeName) != SystemsMap_.end() && "Ths System used before registered");
+        assert(m_SystemsMap.find(TypeName) != m_SystemsMap.end() && "Ths System used before registered");
 
-        SignaturesMap_.insert({TypeName, inSignature});
+        m_SignaturesMap.insert({TypeName, inSignature});
     }
 
     void OnEntityDestroyed(Entity entity)
     {
-        for (auto const& pair : SystemsMap_)
+        for (auto const& pair : m_SystemsMap)
         {
             auto const& system = pair.second;
             system->Entities.erase(entity);
@@ -49,11 +49,11 @@ public:
 
     void OnEntitySignatureChanged(const Entity inEntity, const Signature inEntitySignature)
     {
-        for (auto const& pair : SystemsMap_)
+        for (auto const& pair : m_SystemsMap)
         {
             auto const& Type = pair.first;
             auto const& System = pair.second;
-            auto const& SystemSignature = SignaturesMap_[Type];
+            auto const& SystemSignature = m_SignaturesMap[Type];
 
             if ((inEntitySignature & SystemSignature) == SystemSignature)
             {
@@ -69,9 +69,9 @@ public:
 
 private:
     // string pointer -> Signature
-    std::unordered_map<const char*, Signature> SignaturesMap_;
+    std::unordered_map<const char*, Signature> m_SignaturesMap;
     // String pointer -> Systems
-    std::unordered_map<const char*, std::shared_ptr<System>> SystemsMap_;
+    std::unordered_map<const char*, std::shared_ptr<System>> m_SystemsMap;
 };
 
 
