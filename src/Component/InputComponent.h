@@ -21,6 +21,8 @@ struct InputComponent
     sf::Keyboard::Scancode KeyLeft      = sf::Keyboard::Scancode::A;
     sf::Keyboard::Scancode KeyRight     = sf::Keyboard::Scancode::D;
     sf::Keyboard::Scancode KeyAction    = sf::Keyboard::Scancode::Space;
+
+    float maxSpeed = 200.f;
 };
 
 
