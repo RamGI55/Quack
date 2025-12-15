@@ -33,6 +33,14 @@ add_executable(main src/main.cpp
         src/Component/SoundComponent.h
         src/Component/PlayerComponent.h
         src/Component/CollisionComponent.h
+        src/Component/AIComponent.h
+        src/Systems/InputSystem.cpp
+        src/Systems/InputSystem.h
+        src/Systems/RenderSystem.cpp
+        src/Systems/RenderSystem.h
+        src/Component/VelocityComponent.h
+        src/Systems/MovementSystem.cpp
+        src/Systems/MovementSystem.h
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
