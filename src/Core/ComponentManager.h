@@ -80,7 +80,7 @@ private:
         assert(m_ComponentTypes_.find(TypeName) != m_ComponentTypes_.end() && "Cannot Find the Component.");
 
         // returns the pointer from the const char array representation of a Type T => using it as the unique key into a map of Component Types.
-        return std::static_pointer_cast<ComponentArray<T>>(m_ComponentArrays_[TypeName])();
+        return std::static_pointer_cast<ComponentArray<T>>(m_ComponentArrays_[TypeName]);
 
     }
 };
