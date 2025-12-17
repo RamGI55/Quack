@@ -8,12 +8,11 @@
 
 struct CollisionComponent
 {
-    sf::FloatRect CollisionBody;
+    sf::FloatRect   CollisionBody;
     bool isTrigger  = false;
     bool isStatic   = false;
     bool visualised = false;
     uint32_t layer  = 0;
-
 
 };
 #endif //DUCKDUCKROAD_COLLISIONCOMPONENT_H
