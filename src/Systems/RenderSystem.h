@@ -5,6 +5,7 @@
 #ifndef DUCKDUCKROAD_RENDERSYSTEM_H
 #define DUCKDUCKROAD_RENDERSYSTEM_H
 #include "../Core/System.h"
+#include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Texture.hpp"
 
 class Coordinator;
@@ -13,7 +14,7 @@ class RenderSystem : public System
 {
 public:
     void init(std::shared_ptr<sf::Texture>, Coordinator& coordinator);
-    void update(float dt, Coordinator& coordinator);
+    void update(sf::RenderWindow& window, Coordinator& coordinator);
 
 private:
 
