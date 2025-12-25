@@ -27,6 +27,8 @@ struct FrogRuleComponent {
     uint32_t BonusEventPoints   = 1000;
     uint32_t SuccessEventPoints = 500;
 
+    float SpeedMultiplierPerLevel = 1.1f;
+
 
 
 };

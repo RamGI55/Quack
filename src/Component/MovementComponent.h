@@ -9,12 +9,13 @@
 struct SmoothMovementComponent {
 
     // TODO: For free movement.
-    float MovementSize  = 64.f;
+    float MovementSpeed  = 64.f;
 
 };
 
 struct GridMovementComponent {
 
+public:
     float CellSize      = 64.f;
     float HopDuration   = 0.15f;
 
@@ -22,6 +23,8 @@ struct GridMovementComponent {
     sf::Vector2f HopStartPos;
     sf::Vector2f HopEndPos;
     float HopProgress   = 0.f;
+
+    sf::Vector2i GridPosition;
 
 };
 #endif //MOVEMENTCOMPONENT_H

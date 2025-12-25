@@ -6,10 +6,12 @@
 #define DUCKDUCKROAD_PLAYERCOMPONENT_H
 #include <cstdint>
 
+#include "../Core/Types.h"
+
 struct PlayerComponent
 {
     uint32_t PlayerId;
-    Entity PlayerSprite;
+    std::optional<Entity> PossessedPawn;
 
 };
 #endif //DUCKDUCKROAD_PLAYERCOMPONENT_H

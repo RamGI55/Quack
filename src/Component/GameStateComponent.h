@@ -26,6 +26,7 @@ struct GameStateComponent {
     GameState state         = GameState::Paused;
     float CurrentTime       = 0.0f;
     uint32_t CurrentLevel   = 0;
+    uint32_t FilledDucks    = 0;
 
 };
 #endif //GAMESTATECOMPONENT_H
