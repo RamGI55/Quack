@@ -9,5 +9,7 @@
 struct PlayerComponent
 {
     uint32_t PlayerId;
+    Entity PlayerSprite;
+
 };
 #endif //DUCKDUCKROAD_PLAYERCOMPONENT_H

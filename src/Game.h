@@ -13,8 +13,12 @@ public:
     Game();
     void Run();
 
+
 private:
     sf::RenderWindow Window_;
+    uint32_t mWindowWidth;
+    uint32_t mWindowHeight;
+    uint32_t mMaxFramerate;
 
 };
 

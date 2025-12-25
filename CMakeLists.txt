@@ -44,6 +44,11 @@ add_executable(main src/main.cpp
         src/Scene/SceneManager.cpp
         src/Scene/SceneManager.h
         src/Scene/IScene.h
+        src/Component/PlayeStateComponent.h
+        src/Component/GameRuleComponent.h
+        src/Component/GameStateComponent.h
+        src/Component/PawnComponent.h
+        src/Component/MovementComponent.h
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
