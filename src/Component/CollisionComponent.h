@@ -6,13 +6,17 @@
 #define DUCKDUCKROAD_COLLISIONCOMPONENT_H
 #include "SFML/Graphics/RectangleShape.hpp"
 
-struct CollisionComponent
+
+struct AABBCollisionComponent
 {
-    sf::FloatRect   CollisionBody;
-    bool isTrigger  = false;
-    bool isStatic   = false;
-    bool visualised = false;
-    uint32_t layer  = 0;
+    sf::FloatRect   CollisionRect; // using rect shape for collision
+    uint32_t Layer  = 0;
+    uint32_t Mask   = 0;
+    bool IsTrigger  = false;
+    bool IsStatic   = false;
+    bool Visualised = false;
+
 
 };
+
 #endif //DUCKDUCKROAD_COLLISIONCOMPONENT_H
