@@ -56,6 +56,10 @@ add_executable(main src/main.cpp
         src/Utils/CollisionUtils.h
         src/Core/CollisionLayers.h
         src/Games/Quack/QKCollisionLayer.h
+        src/Core/SpatialGrid.cpp
+        src/Core/SpatialGrid.h
+        src/Systems/CollisionSystem.cpp
+        src/Systems/CollisionSystem.h
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
