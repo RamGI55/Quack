@@ -60,6 +60,10 @@ add_executable(main src/main.cpp
         src/Core/SpatialGrid.h
         src/Systems/CollisionSystem.cpp
         src/Systems/CollisionSystem.h
+        src/Factory/EntityFactory.cpp
+        src/Factory/EntityFactory.h
+        src/Core/AssetManager.cpp
+        src/Core/AssetManager.h
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
