@@ -19,7 +19,12 @@
 
 class AssetManager
 {
-
+public:
+    AssetManager()
+    {
+        CreateFallbackTexture();
+        CreateFallbackSoundBuffer();
+    }
 private:
     std::unordered_map<const char*, std::any> mCaches;
 
@@ -44,7 +49,7 @@ public:
     bool Load(const std::string& id, const std::string& FilePath);
 
     template<typename T>
-    std::shared_ptr<T> Get(std::string id)
+    std::shared_ptr<T> Get(const std::string id)
     {
         auto& cache = GetCache<T>();
         auto it = cache.find(id);
@@ -58,14 +63,14 @@ public:
     }
 
     template<typename T>
-    bool Has(std::string id)
+    bool Has(const std::string id)
     {
         auto& cache = GetCache<T>();
         return cache.find(id) != cache.end();
     }
 
     template<typename T>
-    void Unload(std::string id)
+    void Unload(const std::string id)
     {
         GetCache<T>().erase(id);
     }
@@ -83,12 +88,14 @@ public:
     }
 
 private:
-    template<typename T>
-    std::shared_ptr<T> GetFallback()
-    {
-        std::cerr << "[AssetManager] Asset not found: " << typeid(T).name() << "\n";
-    }
+    std::shared_ptr<sf::Texture> mFallbackTexture;
+    std::shared_ptr<sf::SoundBuffer> mFallbackSoundBuffer;
 
+    template<typename T>
+    std::shared_ptr<T> GetFallback();
+
+    void CreateFallbackTexture();
+    void CreateFallbackSoundBuffer(){ mFallbackSoundBuffer = std::make_shared<sf::SoundBuffer>();  }
 };
 
     template<>
@@ -131,5 +138,17 @@ private:
         return true;
     }
 
+
+    template<>
+    inline std::shared_ptr<sf::Texture> AssetManager::GetFallback<sf::Texture>()
+    {
+        return mFallbackTexture;
+    }
+
+    template<>
+    inline std::shared_ptr<sf::SoundBuffer> AssetManager::GetFallback<sf::SoundBuffer>()
+    {
+        return mFallbackSoundBuffer;
+    }
 
 #endif //DUCKDUCKROAD_ASSETMANAGER_H
