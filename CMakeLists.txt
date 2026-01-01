@@ -61,5 +61,5 @@ add_executable(main src/main.cpp
         src/Systems/CollisionSystem.cpp
         src/Systems/CollisionSystem.h
 )
-target_compile_features(main PRIVATE cxx_std_17)
+target_compile_features(main PRIVATE cxx_std_20)
 target_link_libraries(main PRIVATE SFML::Graphics)
