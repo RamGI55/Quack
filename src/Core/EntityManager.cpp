@@ -28,6 +28,7 @@ Entity EntityManager::CreateEntity()
 void EntityManager::DestroyEntity(Entity inEntity)
 {
     assert(m_LivingEntityCount > 0 && "No Entities to delete");
+    m_Signatures[inEntity].reset();
 
     m_AvailableEntities.push(inEntity);
     --m_LivingEntityCount;
