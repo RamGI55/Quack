@@ -12,8 +12,8 @@
             static_cast<uint32_t>(a) | static_cast<uint32_t>(b)); \
         }\
     inline EnumType operator&(EnumType a, EnumType b) { \
-         return static_cast<EnumType>(\
-             static_cast<uint32_t>(a) & static_cast<uint32_t>(b)); \
+        return static_cast<EnumType>(\
+            static_cast<uint32_t>(a) & static_cast<uint32_t>(b)); \
         }\
     inline EnumType operator~(EnumType a) {\
         return static_cast<EnumType>(~static_cast<uint32_t>(a));\

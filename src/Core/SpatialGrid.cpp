@@ -11,8 +11,10 @@ SpatialGrid::SpatialGrid(float CellSize, unsigned int WorldWidth, unsigned int W
 
 int SpatialGrid::PositionToIndex(float x, float y) const
 {
+    // both coordinates and cellsize are float - must cast to the integer to make the grid.
     int cellX = static_cast<int>(x / mCellSize);
     int cellY = static_cast<int>(y / mCellSize);
+
     return cellY * mGridWidth + cellX;
 }
 

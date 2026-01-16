@@ -13,7 +13,6 @@ CollisionSystem::CollisionSystem(SystemManager* manager )
 
 void CollisionSystem::Init(float CellSize, unsigned int WorldWidth, unsigned int WorldHeight)
 {
-    // How to declare the unique ptr!
     mGrid = std::make_unique<SpatialGrid>(CellSize, WorldWidth, WorldHeight) ;
 }
 
@@ -50,7 +49,6 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
         for (auto entityB : nearby)
         {
 
-
             if (entityA == entityB) {
                 continue;
             }
@@ -64,7 +62,7 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
             auto& collisionB = coordinator.GetComponent<AABBCollisionComponent>(entityB);
 
             bool shouldCollide = ShouldCollide(collisionA.Layer, collisionA.Mask,
-                                                collisionB.Layer, collisionB.Mask);
+            collisionB.Layer, collisionB.Mask);
             bool aabbHit = CheckAABB(collisionA.CollisionRect, collisionB.CollisionRect);
 
 
@@ -90,7 +88,7 @@ const std::vector<CollisionEvent> & CollisionSystem::GetCollisionEvent() const
 
 void CollisionSystem::ClearEvents()
 {
-   mCollisionEvents.clear();
+    mCollisionEvents.clear();
 }
 
 bool CollisionSystem::CheckAABB(const sf::FloatRect &a, const sf::FloatRect &b)

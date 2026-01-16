@@ -19,9 +19,7 @@ public:
 
 private:
     std::queue<Entity> m_AvailableEntities{};
-
     std::array<Signature, MAX_ENTITIES> m_Signatures{};
-
     uint32_t m_LivingEntityCount{};
 };
 

@@ -23,9 +23,7 @@ public:
         assert(m_ComponentTypes_.find(TypeName) == m_ComponentTypes_.end() && "The Component Type has more than one types");
 
         m_ComponentTypes_.insert({TypeName, m_NextComponentType_});
-
         m_ComponentArrays_.insert({TypeName, std::make_shared<ComponentArray<T>>()});
-
         ++m_NextComponentType_;
     }
 
