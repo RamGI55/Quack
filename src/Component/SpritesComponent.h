@@ -18,7 +18,7 @@ struct SpriteComponent
         Texture = newTexture;
         Sprite.emplace(*Texture);
     }
-};
 
+};
 
 #endif //DUCKDUCKROAD_SPRITESCOMPONENT_H

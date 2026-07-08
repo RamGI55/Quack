@@ -8,13 +8,18 @@
 #include "Component/MovementComponent.h"
 #include "Component/PlayerComponent.h"
 #include "Component/TransformComponent.h"
+#include "Factory/EntityFactory.h"
+#include "Systems/RenderSystem.h"
+#include "Utils/CollisionUtils.h"
+#include <iostream> // DEBUG: component lifetime probe, remove later
 
-Game::Game() :mWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), "DuckDuckRoad") {
-
+Game::Game() :mWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), "DuckDuckRoad")
+{
     mWindow.setFramerateLimit(mMaxFramerate);
 }
 
-void Game::Run() {
+void Game::Run()
+{
     Init();
     while (mWindow.isOpen()) {
         float dt = mClock.restart().asSeconds();
@@ -24,16 +29,24 @@ void Game::Run() {
     }
 }
 
-void Game::Init() {
-
+void Game::Init()
+{
     // Initalise the coordinator
     mCoordinator.Init();
+
+    AssetManager assets;
 
     mCoordinator.RegisterComponent<InputComponent>();
     mCoordinator.RegisterComponent<TransformComponent>();
     mCoordinator.RegisterComponent<GridMovementComponent>();
+    mCoordinator.RegisterComponent<AABBCollisionComponent>();
+    mCoordinator.RegisterComponent<SpriteComponent>();
 
     mGridMovementSystem = mCoordinator.RegisterSystem<GridMovementSystem>();
+    mCollisionSystem = mCoordinator.RegisterSystem<CollisionSystem>();
+    mRenderSystem = mCoordinator.RegisterSystem<RenderSystem>();
+
+    mCollisionSystem->Init(64.f,mWindowHeight, mWindowWidth);
 
     Signature sig;
     sig.set(mCoordinator.GetComponentType<TransformComponent>());
@@ -41,49 +54,56 @@ void Game::Init() {
     sig.set(mCoordinator.GetComponentType<InputComponent>());
     mCoordinator.SetSystemSignature<GridMovementSystem>(sig);
 
-    mPlayer = mCoordinator.CreateEntity();
+    Signature rendSig;
+    rendSig.set(mCoordinator.GetComponentType<TransformComponent>());
+    rendSig.set(mCoordinator.GetComponentType<SpriteComponent>());
+    mCoordinator.SetSystemSignature<RenderSystem>(rendSig);
 
-    sf::Vector2i startGrid = { 15, 15};
-    float cellSize = 64.f;
-    sf::Vector2f startPos ={
-    startGrid.x * cellSize + cellSize / 2,
-    startGrid.y * cellSize + cellSize / 2
-    };
+    Signature colSig;
+    colSig.set(mCoordinator.GetComponentType<TransformComponent>());
+    colSig.set(mCoordinator.GetComponentType<AABBCollisionComponent>());
+    mCoordinator.SetSystemSignature<CollisionSystem>(colSig);
 
-    mCoordinator.AddComponent(mPlayer, TransformComponent{.Position = startPos});
-    mCoordinator.AddComponent(mPlayer, GridMovementComponent{.GridPosition = startGrid});
-    mCoordinator.AddComponent(mPlayer, InputComponent{});
+    EntityDef playerDef{.type = "player", .spawnX = 15, .spawnY = 15, .cellSize = 125.f};
 
-    // Temp visual
-    mTempRectangle.setSize({cellSize - 4.f, cellSize - 4.f});
-    mTempRectangle.setFillColor(sf::Color::Green);
-    mTempRectangle.setOrigin({(cellSize - 4.f) / 2.f, (cellSize - 4.f) / 2.f});
+    PlayerFactory player1(mCoordinator, assets);
+    mPlayer = player1.Create(playerDef);
 
 }
 
-void Game::ProcessEvents() {
-
+void Game::ProcessEvents()
+{
     while (const std::optional event = mWindow.pollEvent())
     {
         if (event->is<sf::Event::Closed>())
         {
             mWindow.close();
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::U))
+        {
+            bDebug = true;
+        }
     }
 
 }
 
-void Game::Update(float dt) {
+void Game::Update(float dt)
+{
 
     mGridMovementSystem->Update(dt, mCoordinator);
+    mCollisionSystem->Update(dt, mCoordinator);
 }
 
-void Game::Render() {
+void Game::Render()
+{
     auto& transform = mCoordinator.GetComponent<TransformComponent>(mPlayer);
-     mTempRectangle.setPosition(transform.Position);  // center of screen
 
     mWindow.clear(sf::Color::Black);
-    mWindow.draw(mTempRectangle);
+    mRenderSystem->update(mWindow, mCoordinator);
+    if (bDebug == true)
+    {
+        CollisionUtils::DebugAABB(mWindow, *mCollisionSystem, mCoordinator);
+    }
     mWindow.display();
 }
 

@@ -24,7 +24,7 @@ class ComponentArray : public IComponentArray
 public:
     void InsertData(Entity inEntity, T inComponent)
     {
-        // assert for the corruptions.w
+        // assert for the corruptions.
         assert(m_EntityToIndex.find(inEntity) == m_EntityToIndex.end()
         && "Component already exists for this entity!");
 

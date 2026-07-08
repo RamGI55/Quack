@@ -16,7 +16,6 @@ struct AABBCollisionComponent
     bool IsStatic   = false;
     bool Visualised = false;
 
-
 };
 
 #endif //DUCKDUCKROAD_COLLISIONCOMPONENT_H

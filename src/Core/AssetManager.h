@@ -38,7 +38,7 @@ private:
 
         if (mCaches.find(typeName) == mCaches.end())
         {
-            mCaches[typeName] = CacheMap<T>(); // TODO: Think again it is good idea to make another cache map if it doesn't have.
+            mCaches[typeName] = CacheMap<T>(); // TODO: Think again, is it good idea to make another cache map if it doesn't have.
         }
 
         return std::any_cast<CacheMap<T>&>(mCaches[typeName]);
@@ -56,7 +56,7 @@ public:
 
         if (it == cache.end())
         {
-            std::cerr << "[AssetManager] Asset not found: " << id << "\n";
+            std::cerr << "[AssetManager] Asset not found: " << id << " Fallback Printed"<<"\n";
             return GetFallback<T>();
         }
         return it->second;

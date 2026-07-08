@@ -84,6 +84,7 @@ std::vector<Entity> SpatialGrid::GetNearby(const sf::FloatRect& BoundingBox) con
     std::vector<Entity> result;
     
     // Get cell from center of bounding box
+    // TODO: Transition float to int is quite expensive, is any alternatives?
     sf::Vector2f centre = BoundingBox.getCenter();
     int centerCellX = static_cast<int>(centre.x / mCellSize);
     int centerCellY = static_cast<int>(centre.y / mCellSize);
