@@ -14,7 +14,6 @@ class Coordinator;
 
 namespace CollisionUtils
 {
-
     inline void DebugAABB(sf::RenderWindow& inWindow, System& inSystem, Coordinator& inCoordinator)
     {
         sf::RectangleShape rect;

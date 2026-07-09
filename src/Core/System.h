@@ -12,6 +12,7 @@ class System
 {
 public:
     std::set<Entity> Entities; // why std::set is faster?
+    virtual ~System() = default;
 };
 
 

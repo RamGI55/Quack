@@ -13,6 +13,7 @@ struct SpriteComponent
     std::shared_ptr<sf::Texture> Texture;
     int layer{0};
 
+    // TODO: move the system class.
     void setTexture(const std::shared_ptr<sf::Texture>& newTexture)
     {
         Texture = newTexture;

@@ -3,7 +3,8 @@
 //
 
 #include "InputSystem.h"
-#include <cmath>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include "../Core/Coordinator.h"
 #include "../Component/InputComponent.h"
 
@@ -11,8 +12,13 @@ InputSystem::InputSystem(SystemManager* manager)
 {
 }
 
+InputSystem::~InputSystem()
+{
+}
+
 void InputSystem::init()
 {
+
 }
 
 void InputSystem::UpdateState(ActionState& state, bool down, float dt)
@@ -30,7 +36,6 @@ void InputSystem::UpdateState(ActionState& state, bool down, float dt)
     state.Released = !down && state.Held;
     state.Held = state.holdTime > 0.5;
     state.Value = down ? 1.f : 0.f;
-
 }
 
 void InputSystem::Update(float dt, Coordinator& coordinator)
@@ -39,22 +44,16 @@ void InputSystem::Update(float dt, Coordinator& coordinator)
     {
         auto& input     = coordinator.GetComponent<InputComponent>(entity);
 
-        UpdateState(input.Up, input.KeyUp, dt);
-        UpdateState(input.Down, input.KeyDown, dt);
-        UpdateState(input.Left, input.KeyLeft, dt);
-        UpdateState(input.Right, input.KeyRight, dt);
-        UpdateState(input.Action, input.KeyAction, dt);
+        // Using SFML input interface - change custom multiplatform input interface later.
+        UpdateState(input.Up, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W), dt);
+        UpdateState(input.Down, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S), dt);
+        UpdateState(input.Left, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A), dt);
+        UpdateState(input.Right, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D) , dt);
+        UpdateState(input.Action, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Space), dt);
 
-        // nomalising diagonal movements
-        /*if (velocity.Velocity.x != 0.f && velocity.Velocity.y != 0.f)
-        {
-            float length = std::sqrt(
-                velocity.Velocity.x * velocity.Velocity.x +
-                velocity.Velocity.y * velocity.Velocity.y
-                );
-            velocity.Velocity.x = (velocity.Velocity.x / length)*input.maxSpeed;
-            velocity.Velocity.y = (velocity.Velocity.y / length)*input.maxSpeed;
-        }*/
+        UpdateState(input.MouseTrigger1, sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) , dt);
+        UpdateState(input.MouseTrigger1, sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) , dt);
+        UpdateState(input.MouseTrigger1, sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle) , dt);
 
     }
 }

@@ -14,7 +14,5 @@ struct SoundComponent
     std::optional<sf::Sound> Sound;
     std::shared_ptr<sf::SoundBuffer> SoundBuffer;
 
-
-
 };
 #endif //DUCKDUCKROAD_SOUNDCOMPONENT_H

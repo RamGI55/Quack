@@ -6,16 +6,14 @@
 #define GAMERULECOMPONENT_H
 #include <cstdint>
 
-
-
-struct GameRuleComponent {
-
+struct GameRuleComponent
+{
     float InitTime      = 0.0f;
 
 };
 
-struct FrogRuleComponent {
-
+struct FrogRuleComponent
+{
     uint32_t InitLives  = 3;
     float TotalPlayTime = 300.f;
     float BonusPlayTime = 30.f;
@@ -28,8 +26,6 @@ struct FrogRuleComponent {
     uint32_t SuccessEventPoints = 500;
 
     float SpeedMultiplierPerLevel = 1.1f;
-
-
 
 };
 

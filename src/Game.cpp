@@ -35,16 +35,16 @@ void Game::Init()
 
     AssetManager assets;
 
+    mInputSystem = mCoordinator.RegisterSystem<InputSystem>();
+    mGridMovementSystem = mCoordinator.RegisterSystem<GridMovementSystem>();
+    mCollisionSystem = mCoordinator.RegisterSystem<CollisionSystem>();
+    mRenderSystem = mCoordinator.RegisterSystem<RenderSystem>();
+
     mCoordinator.RegisterComponent<InputComponent>();
     mCoordinator.RegisterComponent<TransformComponent>();
     mCoordinator.RegisterComponent<GridMovementComponent>();
     mCoordinator.RegisterComponent<AABBCollisionComponent>();
     mCoordinator.RegisterComponent<SpriteComponent>();
-
-    mInputSystem = mCoordinator.RegisterSystem<InputSystem>();
-    mGridMovementSystem = mCoordinator.RegisterSystem<GridMovementSystem>();
-    mCollisionSystem = mCoordinator.RegisterSystem<CollisionSystem>();
-    mRenderSystem = mCoordinator.RegisterSystem<RenderSystem>();
 
     mCollisionSystem->Init(64.f,mWindowHeight, mWindowWidth);
 

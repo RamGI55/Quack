@@ -15,6 +15,7 @@ class RenderSystem : public System
 {
 public:
     RenderSystem(SystemManager* manager = nullptr);
+    ~RenderSystem();
     void init(const std::shared_ptr<sf::Texture>&, Coordinator& coordinator);
     void update(sf::RenderWindow& window, Coordinator& coordinator);
 

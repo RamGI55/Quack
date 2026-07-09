@@ -4,11 +4,11 @@
 
 #ifndef DUCKDUCKROAD_INPUTCOMPONENT_H
 #define DUCKDUCKROAD_INPUTCOMPONENT_H
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/Mouse.hpp>
+
 
 struct ActionState
 {
+    bool IsBlocked  = false;
     bool Pressed    = false;
     bool Released   = false;
     bool Held       = false;
@@ -26,12 +26,6 @@ enum class InputType
 struct InputComponent
 {
     InputType inputType     = InputType::Keyboard;
-
-    bool KeyUp        = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W);
-    bool KeyDown      = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S);
-    bool KeyLeft      = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A);
-    bool KeyRight     = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D);
-    bool KeyAction    = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Space);
 
     // Mouse Inputs
     ActionState Up;
