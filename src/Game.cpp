@@ -31,6 +31,7 @@ void Game::Run()
 void Game::Init()
 {
     // Initalise the coordinator
+
     mCoordinator.Init();
 
     AssetManager assets;

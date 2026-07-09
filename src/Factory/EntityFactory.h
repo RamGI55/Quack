@@ -14,8 +14,6 @@
 #include "../Component/TransformComponent.h"
 #include "../Games/Quack/QKCollisionLayer.h"
 #include "../Core/AssetManager.h"
-#include <iostream> // DEBUG: component lifetime probe, remove later
-
 
 
 class Coordinator;

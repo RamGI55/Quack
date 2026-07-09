@@ -10,11 +10,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "SFML/Audio/Music.hpp"
 #include "SFML/Audio/SoundBuffer.hpp"
 #include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/Texture.hpp"
-
 
 class AssetManager
 {
@@ -81,7 +79,7 @@ public:
         mCaches.erase(typeName);
     }
 
-    void ClearALl()
+    void ClearAll()
     {
         mCaches.clear();
     }
