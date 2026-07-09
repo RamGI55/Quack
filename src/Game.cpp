@@ -96,7 +96,6 @@ void Game::Update(float dt)
     mInputSystem->Update(dt, mCoordinator);
     mGridMovementSystem->Update(dt, mCoordinator);
     mCollisionSystem->Update(dt, mCoordinator);
-
 }
 
 void Game::Render()
