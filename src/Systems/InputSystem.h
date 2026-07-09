@@ -4,16 +4,23 @@
 
 #ifndef DUCKDUCKROAD_INPUTSYSTEM_H
 #define DUCKDUCKROAD_INPUTSYSTEM_H
+
 #include "../Core/System.h"
 
 
+enum class InputType;
+class SystemManager;
+struct ActionState;
 class Coordinator;
 
 class InputSystem : public System
 {
 public:
+    InputSystem(SystemManager* manager);
+    ~InputSystem();
     void init();
-    void update(float dt, Coordinator& coordinator);
+    void UpdateState(ActionState& state, bool down, float dt);
+    void Update(float dt, Coordinator& coordinator);
 
 private:
 

@@ -7,17 +7,13 @@
 #include "../../Core/CollisionLayers.h"
 
 
-enum class QKCollisionType: uint32_t {
-
+enum class QKCollisionType: uint32_t
+{
     Default     = 0,
     Player      = 1 << 0,
-    Vehicle     = 1 << 1,
-    log         = 1 << 2,
-    Water       = 1 << 3,
-    Goal        = 1 << 4,
-    Wall        = 1 << 5,
-    Grass       = 1 << 6,
-
+    Enemy       = 1 << 1,
+    Terrain     = 1 << 2,
+    Blocked     = 1 << 3,
 };
 ENABLE_BITMASK_OPERATORS(QKCollisionType)
 

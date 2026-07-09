@@ -11,6 +11,7 @@
 class GridMovementSystem : public System{
 public:
     GridMovementSystem(SystemManager* manager) {}
+    ~GridMovementSystem() {}
     void init();
     void Update(float dt, Coordinator& coordinator);
 };

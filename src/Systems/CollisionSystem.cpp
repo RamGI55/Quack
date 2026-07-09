@@ -7,12 +7,13 @@
 #include "../Component/CollisionComponent.h"
 #include "../Component/TransformComponent.h"
 
-CollisionSystem::CollisionSystem(SystemManager* manager )
+CollisionSystem::CollisionSystem(SystemManager* manager)
 {
 }
 
 void CollisionSystem::Init(float CellSize, unsigned int WorldWidth, unsigned int WorldHeight)
 {
+    // How to declare the unique ptr!
     mGrid = std::make_unique<SpatialGrid>(CellSize, WorldWidth, WorldHeight) ;
 }
 
@@ -25,7 +26,6 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
     {
         auto& Transform = coordinator.GetComponent<TransformComponent>(entity);
         auto& AABBCollision = coordinator.GetComponent<AABBCollisionComponent>(entity);
-
 
         // Convert centre position to the top-left
         // SFML standards detect the collision by the top-left.
@@ -48,7 +48,6 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
 
         for (auto entityB : nearby)
         {
-
             if (entityA == entityB) {
                 continue;
             }
@@ -61,10 +60,8 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
 
             auto& collisionB = coordinator.GetComponent<AABBCollisionComponent>(entityB);
 
-            bool shouldCollide = ShouldCollide(collisionA.Layer, collisionA.Mask,
-            collisionB.Layer, collisionB.Mask);
+            bool shouldCollide = ShouldCollide(collisionA.Layer, collisionA.Mask,collisionB.Layer, collisionB.Mask);
             bool aabbHit = CheckAABB(collisionA.CollisionRect, collisionB.CollisionRect);
-
 
             if (shouldCollide && aabbHit)
             {

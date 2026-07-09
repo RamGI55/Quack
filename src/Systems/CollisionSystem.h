@@ -10,6 +10,7 @@
 #include "../Core/Coordinator.h"
 #include "../Core/Types.h"
 #include "../Core/SpatialGrid.h"
+#include "SFML/Graphics/RenderWindow.hpp"
 
 struct CollisionEvent
 {

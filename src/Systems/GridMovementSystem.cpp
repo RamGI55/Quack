@@ -35,16 +35,16 @@ void GridMovementSystem::Update(float dt, Coordinator& coordinator) {
             sf::Vector2i direction = { 0, 0 };
 
             // Reading the input
-            if (sf::Keyboard::isKeyPressed(inputComponent.KeyUp)) {
+            if (inputComponent.Up.Value > 0.0f) {
                 direction.y -= 1.f;
             }
-            if (sf::Keyboard::isKeyPressed(inputComponent.KeyDown)) {
+            if (inputComponent.Down.Value > 0.0f) {
                 direction.y += 1.f;
             }
-            if (sf::Keyboard::isKeyPressed(inputComponent.KeyLeft)) {
+            if (inputComponent.Left.Value > 0.0f) {
                 direction.x -= 1.f;
             }
-            if (sf::Keyboard::isKeyPressed(inputComponent.KeyRight)) {
+            if (inputComponent.Right.Value > 0.0f) {
                 direction.x += 1.f;
             }
 

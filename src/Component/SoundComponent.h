@@ -5,6 +5,8 @@
 #ifndef DUCKDUCKROAD_SOUNDCOMPONENT_H
 #define DUCKDUCKROAD_SOUNDCOMPONENT_H
 #include <optional>
+#include <string>
+
 #include "SFML/Audio/Sound.hpp"
 
 struct SoundComponent

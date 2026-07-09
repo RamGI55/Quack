@@ -8,12 +8,15 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Texture.hpp"
 
+class SystemManager;
 class Coordinator;
 
 class RenderSystem : public System
 {
 public:
-    void init(std::shared_ptr<sf::Texture>, Coordinator& coordinator);
+    RenderSystem(SystemManager* manager = nullptr);
+    ~RenderSystem();
+    void init(const std::shared_ptr<sf::Texture>&, Coordinator& coordinator);
     void update(sf::RenderWindow& window, Coordinator& coordinator);
 
 private:

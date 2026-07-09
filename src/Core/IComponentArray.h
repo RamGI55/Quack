@@ -1,7 +1,7 @@
 ﻿/*
  *  IComponentArray
  *  The simple continous array to grab the relevent component for an array
- *  - The Array must be "packed", no holes.
+ *  - The Array must be "packed", has no holes.
  *  - The iteraton must be done without valid check; All of the element in the array must be valid.
  */
 
@@ -24,8 +24,9 @@ class ComponentArray : public IComponentArray
 public:
     void InsertData(Entity inEntity, T inComponent)
     {
-        // assert for the corruptions.w
-        assert(m_EntityToIndex.find(inEntity) == m_EntityToIndex.end()&& "Component already exists for this entity!");
+        // assert for the corruptions.
+        assert(m_EntityToIndex.find(inEntity) == m_EntityToIndex.end()
+        && "Component already exists for this entity!");
 
         size_t NewIndex = m_Size;
         m_EntityToIndex[inEntity] = NewIndex;
@@ -37,8 +38,6 @@ public:
 
     void RemoveData(Entity inEntity)
     {
-        assert(m_EntityToIndex.find(inEntity) != m_EntityToIndex.end() && "Tried to remove an entity that does not exist!");
-
         // find the entity index to remove
         size_t IndexForRemovedEntity = m_EntityToIndex[inEntity];
         size_t NewIndex = m_Size - 1; // get the last index of the array

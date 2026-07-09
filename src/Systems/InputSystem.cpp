@@ -3,47 +3,57 @@
 //
 
 #include "InputSystem.h"
-#include <cmath>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include "../Core/Coordinator.h"
 #include "../Component/InputComponent.h"
-#include "../Component/VelocityComponent.h"
 
-void InputSystem::update(float dt, Coordinator& coordinator)
+InputSystem::InputSystem(SystemManager* manager)
+{
+}
+
+InputSystem::~InputSystem()
+{
+}
+
+void InputSystem::init()
+{
+
+}
+
+void InputSystem::UpdateState(ActionState& state, bool down, float dt)
+{
+    if (down)
+    {
+        state.holdTime += dt;
+    }
+    else
+    {
+        state.holdTime = 0.f;
+    }
+
+    state.Pressed = down && !state.Held;
+    state.Released = !down && state.Held;
+    state.Held = state.holdTime > 0.5;
+    state.Value = down ? 1.f : 0.f;
+}
+
+void InputSystem::Update(float dt, Coordinator& coordinator)
 {
     for (const auto entity : Entities)
     {
         auto& input     = coordinator.GetComponent<InputComponent>(entity);
-        auto& velocity  = coordinator.GetComponent<VelocityComponent>(entity);
 
-        velocity.Velocity = { 0.f, 0.f };
+        // Using SFML input interface - change custom multiplatform input interface later.
+        UpdateState(input.Up, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W), dt);
+        UpdateState(input.Down, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S), dt);
+        UpdateState(input.Left, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A), dt);
+        UpdateState(input.Right, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D) , dt);
+        UpdateState(input.Action, sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Space), dt);
 
-        if (sf::Keyboard::isKeyPressed(input.KeyUp))
-        {
-            velocity.Velocity.y -= input.maxSpeed;
-        }
-        if (sf::Keyboard::isKeyPressed(input.KeyDown))
-        {
-            velocity.Velocity.y += input.maxSpeed;
-        }
-        if (sf::Keyboard::isKeyPressed(input.KeyRight))
-        {
-            velocity.Velocity.x += input.maxSpeed;
-        }
-        if (sf::Keyboard::isKeyPressed(input.KeyLeft))
-        {
-            velocity.Velocity.x -= input.maxSpeed;
-        }
-
-        // nomalising diagonal movements
-        if (velocity.Velocity.x != 0.f && velocity.Velocity.y != 0.f)
-        {
-            float length = std::sqrt(
-                velocity.Velocity.x * velocity.Velocity.x +
-                velocity.Velocity.y * velocity.Velocity.y
-                );
-            velocity.Velocity.x = (velocity.Velocity.x / length)*input.maxSpeed;
-            velocity.Velocity.y = (velocity.Velocity.y / length)*input.maxSpeed;
-        }
+        UpdateState(input.MouseTrigger1, sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) , dt);
+        UpdateState(input.MouseTrigger1, sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) , dt);
+        UpdateState(input.MouseTrigger1, sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle) , dt);
 
     }
 }

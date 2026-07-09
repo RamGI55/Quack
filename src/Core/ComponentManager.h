@@ -8,6 +8,7 @@
 #include <memory>
 #include <typeinfo>
 #include <unordered_map>
+#include <iostream>
 
 #include "IComponentArray.h"
 #include "Types.h"
@@ -60,7 +61,6 @@ public:
         for (auto const& pair : m_ComponentArrays_)
         {
             auto const& component = pair.second;
-
             component->OnEntityDestroyed(inEntity);
         }
     }
