@@ -10,6 +10,7 @@
 #include "Systems/GridMovementSystem.h"
 #include "Systems/CollisionSystem.h"
 #include "Systems/RenderSystem.h"
+#include "Systems/InputSystem.h"
 
 class Game
 {
@@ -31,6 +32,7 @@ private:
 
     Coordinator mCoordinator;
     std::shared_ptr<GridMovementSystem> mGridMovementSystem;
+    std::shared_ptr<InputSystem> mInputSystem;
     Entity mPlayer;
     sf::Clock mClock;
     AssetManager mAssetManager;

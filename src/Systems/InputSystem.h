@@ -7,13 +7,17 @@
 #include "../Core/System.h"
 
 
+class SystemManager;
+struct ActionState;
 class Coordinator;
 
 class InputSystem : public System
 {
 public:
+    InputSystem(SystemManager* manager);
     void init();
-    void update(float dt, Coordinator& coordinator);
+    void UpdateState(ActionState& state, bool down, float dt);
+    void Update(float dt, Coordinator& coordinator);
 
 private:
 

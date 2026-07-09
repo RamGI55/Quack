@@ -11,7 +11,6 @@
 #include "Factory/EntityFactory.h"
 #include "Systems/RenderSystem.h"
 #include "Utils/CollisionUtils.h"
-#include <iostream> // DEBUG: component lifetime probe, remove later
 
 Game::Game() :mWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), "DuckDuckRoad")
 {
@@ -42,11 +41,16 @@ void Game::Init()
     mCoordinator.RegisterComponent<AABBCollisionComponent>();
     mCoordinator.RegisterComponent<SpriteComponent>();
 
+    mInputSystem = mCoordinator.RegisterSystem<InputSystem>();
     mGridMovementSystem = mCoordinator.RegisterSystem<GridMovementSystem>();
     mCollisionSystem = mCoordinator.RegisterSystem<CollisionSystem>();
     mRenderSystem = mCoordinator.RegisterSystem<RenderSystem>();
 
     mCollisionSystem->Init(64.f,mWindowHeight, mWindowWidth);
+
+    Signature inputSig;
+    inputSig.set(mCoordinator.GetComponentType<InputComponent>());
+    mCoordinator.SetSystemSignature<InputSystem>(inputSig);
 
     Signature sig;
     sig.set(mCoordinator.GetComponentType<TransformComponent>());
@@ -89,9 +93,10 @@ void Game::ProcessEvents()
 
 void Game::Update(float dt)
 {
-
+    mInputSystem->Update(dt, mCoordinator);
     mGridMovementSystem->Update(dt, mCoordinator);
     mCollisionSystem->Update(dt, mCoordinator);
+
 }
 
 void Game::Render()
