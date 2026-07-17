@@ -33,6 +33,10 @@ public:
     {
         const char* TypeName = typeid(T).name();
 
+        if (m_ComponentTypes_.find(TypeName) == m_ComponentTypes_.end())
+        {
+            std::cerr << "[ComponentManager] Component type not registered: " << TypeName << "\n";
+        }
         assert(m_ComponentTypes_.find(TypeName) != m_ComponentTypes_.end() && "Cannot Find the Component.");
 
         return m_ComponentTypes_[TypeName];
@@ -75,6 +79,10 @@ private:
     {
         const char* TypeName = typeid(T).name();
 
+        if (m_ComponentTypes_.find(TypeName) == m_ComponentTypes_.end())
+        {
+            std::cerr << "[ComponentManager] Component type not registered: " << TypeName << "\n";
+        }
         assert(m_ComponentTypes_.find(TypeName) != m_ComponentTypes_.end() && "Cannot Find the Component.");
 
         // returns the pointer from the const char array representation of a Type T => using it as the unique key into a map of Component Types.

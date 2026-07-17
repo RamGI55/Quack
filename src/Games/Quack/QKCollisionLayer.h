@@ -14,6 +14,7 @@ enum class QKCollisionType: uint32_t
     Enemy       = 1 << 1,
     Terrain     = 1 << 2,
     Blocked     = 1 << 3,
+    Goal        = 1 << 4,
 };
 ENABLE_BITMASK_OPERATORS(QKCollisionType)
 

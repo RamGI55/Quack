@@ -14,6 +14,7 @@ public:
     ~GridMovementSystem() {}
     void init();
     void Update(float dt, Coordinator& coordinator);
+    void ResetToSpawn(Entity entity, Coordinator& coordinator);
 };
 
 

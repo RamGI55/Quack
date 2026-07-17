@@ -26,7 +26,7 @@ public:
     CollisionSystem(SystemManager* manager = nullptr);
     void Init(float CellSize, unsigned int WorldWidth, unsigned int WorldHeight);
     void Update(float dt, Coordinator& coordinator);
-    const std::vector<CollisionEvent>& GetCollisionEvent() const;
+    [[nodiscard]] const std::vector<CollisionEvent>& GetCollisionEvent() const;
     void ClearEvents();
 
 private:

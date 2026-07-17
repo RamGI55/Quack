@@ -4,6 +4,8 @@
 
 #ifndef PAWNCOMPONENT_H
 #define PAWNCOMPONENT_H
+#include <optional>
+
 #include "../Core/Types.h"
 
 

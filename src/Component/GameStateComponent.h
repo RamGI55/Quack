@@ -6,27 +6,35 @@
 #define GAMESTATECOMPONENT_H
 #include <cstdint>
 
-enum class GameState {
+enum class GameState
+{
     PreGame,
     InGame,
     Paused,
     GameOver
 };
 
-enum class Difficulties {
+enum class Difficulties
+{
     Easy,
     Medium,
     Hard,
     Hardcore
 };
 
-struct GameStateComponent {
-
+struct GameStateComponent
+{
     Difficulties difficulty = Difficulties::Medium;
+    GameState prvState      = GameState::Paused;
     GameState state         = GameState::Paused;
     float CurrentTime       = 0.0f;
     uint32_t CurrentLevel   = 0;
     uint32_t FilledDucks    = 0;
+    uint32_t TotalDucks     = 0;
+};
 
+struct FrogGameStateComponent
+{
+    uint32_t Score = 0;
 };
 #endif //GAMESTATECOMPONENT_H

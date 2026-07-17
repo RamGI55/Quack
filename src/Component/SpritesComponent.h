@@ -9,15 +9,18 @@
 
 struct SpriteComponent
 {
-    std::optional<sf::Sprite> Sprite;  // Caution: sf::Sprite does not have constructor.
+    std::optional<sf::Sprite> Sprite;
     std::shared_ptr<sf::Texture> Texture;
-    int layer{0};
+    sf::IntRect rect;
+    sf::Vector2f Origin;
+    uint8_t layer{0};
 
     // TODO: move the system class.
     void setTexture(const std::shared_ptr<sf::Texture>& newTexture)
     {
         Texture = newTexture;
         Sprite.emplace(*Texture);
+        rect = sf::IntRect({0, 0}, sf::Vector2i(Texture->getSize()));
     }
 
 };

@@ -19,7 +19,7 @@ RenderSystem::~RenderSystem()
 void RenderSystem::init(const std::shared_ptr<sf::Texture>& inTexture, Coordinator& coordinator) {
     for (auto& entity : Entities) {
         auto& sprites   = coordinator.GetComponent<SpriteComponent>(entity);
-        sprites.setTexture(inTexture);
+        sprites.Texture = inTexture;
     }
 }
 
@@ -30,10 +30,11 @@ void RenderSystem::update(sf::RenderWindow& window, Coordinator &coordinator) {
 
         if (sprites.Sprite)
         {
-            // Only READ transform, apply to sprite for drawing
+            // Only READ transform/sprite data, apply to sf::Sprite for drawing
             sprites.Sprite->setPosition(transform.Position);
             sprites.Sprite->setRotation(transform.Angle);
             sprites.Sprite->setScale(transform.Scale);
+            sprites.Sprite->setTextureRect(sprites.rect);
 
             window.draw(*sprites.Sprite);
         }

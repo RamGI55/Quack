@@ -4,7 +4,6 @@
 
 #ifndef DUCKDUCKROAD_PLAYERCOMPONENT_H
 #define DUCKDUCKROAD_PLAYERCOMPONENT_H
-#include <cstdint>
 
 #include "../Core/Types.h"
 

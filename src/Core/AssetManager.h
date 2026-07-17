@@ -21,6 +21,7 @@ public:
     {
         CreateFallbackTexture();
         CreateFallbackSoundBuffer();
+        CreateFallbackFont();
     }
 private:
     std::unordered_map<const char*, std::any> mCaches;
@@ -87,12 +88,14 @@ public:
 private:
     std::shared_ptr<sf::Texture> mFallbackTexture;
     std::shared_ptr<sf::SoundBuffer> mFallbackSoundBuffer;
+    std::shared_ptr<sf::Font> mFallbackFont;
 
     template<typename T>
     std::shared_ptr<T> GetFallback();
 
     void CreateFallbackTexture();
     void CreateFallbackSoundBuffer(){ mFallbackSoundBuffer = std::make_shared<sf::SoundBuffer>();  }
+    void CreateFallbackFont(){ mFallbackFont = std::make_shared<sf::Font>(); }
 };
 
     template<>
@@ -106,7 +109,6 @@ private:
         }
         GetCache<sf::Texture>()[id] = asset;
         return true;
-
     }
 
     template<>
@@ -146,6 +148,12 @@ private:
     inline std::shared_ptr<sf::SoundBuffer> AssetManager::GetFallback<sf::SoundBuffer>()
     {
         return mFallbackSoundBuffer;
+    }
+
+    template<>
+    inline std::shared_ptr<sf::Font> AssetManager::GetFallback<sf::Font>()
+    {
+        return mFallbackFont;
     }
 
 #endif //DUCKDUCKROAD_ASSETMANAGER_H

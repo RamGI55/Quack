@@ -7,7 +7,11 @@
 #include "../Component/TransformComponent.h"
 #include "../Component/VelocityComponent.h"
 
-void MovementSystem::update(const float dt, Coordinator& coordinator)
+MovementSystem::MovementSystem(SystemManager* manager)
+{
+}
+
+void MovementSystem::Update(const float dt, Coordinator& coordinator)
 {
     for (auto entity: Entities)
     {

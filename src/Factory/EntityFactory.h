@@ -4,6 +4,7 @@
 
 #ifndef DUCKDUCKROAD_ENTITYFACTORY_H
 #define DUCKDUCKROAD_ENTITYFACTORY_H
+#include "../Component/AnimationComponent.h"
 #include "../Component/CollisionComponent.h"
 #include "../Component/InputComponent.h"
 #include "../Component/MovementComponent.h"
@@ -61,16 +62,24 @@ public:
         AABBCollisionComponent playerCol;
         playerCol.CollisionRect.size = { cellSize, cellSize };
         playerCol.Layer = static_cast<uint32_t>(QKCollisionType::Player);
-        playerCol.Mask  = static_cast<uint32_t>(QKCollisionType::Enemy | QKCollisionType::Blocked | QKCollisionType::Terrain);
+        playerCol.Mask  = static_cast<uint32_t>(QKCollisionType::Enemy | QKCollisionType::Blocked | QKCollisionType::Terrain | QKCollisionType::Goal);
         playerCol.Visualised = true;
 
         SpriteComponent spriteCom;
-        spriteCom.setTexture(mAssetManager.Get<sf::Texture>("player_tex")); // TODO: change this player texture, currently it shows fall back.
-        spriteCom.Sprite->setScale({ cellSize / 16.f, cellSize / 16.f });
+        spriteCom.setTexture(mAssetManager.Get<sf::Texture>("player_tex"));
         mCoordinator.AddComponent(player, spriteCom);
 
-        mCoordinator.AddComponent(player, TransformComponent{.Position = startPos});
-        mCoordinator.AddComponent(player, GridMovementComponent{.GridPosition = spawnGrid});
+        // Row 2 = front-facing idle pose (see GridMovementSystem.cpp for the full row layout).
+        AnimationComponent animCom;
+        animCom.FrameSize = {32, 32};
+        animCom.Row        = 2;
+        animCom.FrameCount = 8;
+        mCoordinator.AddComponent(player, animCom);
+
+        // RenderSystem drives sf::Sprite scale from TransformComponent::Scale every frame,
+        // so the sprite's own scale must be set here rather than on the SpriteComponent's sf::Sprite directly.
+        mCoordinator.AddComponent(player, TransformComponent{.Position = startPos, .Scale = {cellSize / 32.f, cellSize / 32.f}});
+        mCoordinator.AddComponent(player, GridMovementComponent{.GridPosition = spawnGrid, .SpawnGridPosition = spawnGrid});
         mCoordinator.AddComponent(player, InputComponent{});
         mCoordinator.AddComponent(player, playerCol);
 

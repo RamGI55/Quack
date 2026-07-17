@@ -13,7 +13,6 @@ CollisionSystem::CollisionSystem(SystemManager* manager)
 
 void CollisionSystem::Init(float CellSize, unsigned int WorldWidth, unsigned int WorldHeight)
 {
-    // How to declare the unique ptr!
     mGrid = std::make_unique<SpatialGrid>(CellSize, WorldWidth, WorldHeight) ;
 }
 
@@ -29,16 +28,13 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
 
         // Convert centre position to the top-left
         // SFML standards detect the collision by the top-left.
-        AABBCollision.CollisionRect.position = {
+        AABBCollision.CollisionRect.position =
+        {
             Transform.Position.x - AABBCollision.CollisionRect.size.x / 2.f,
             Transform.Position.y - AABBCollision.CollisionRect.size.y / 2.f
         };
-
-
         mGrid->Update(entity, AABBCollision.CollisionRect);
-
     }
-
 
     // collision checking loop O(n^2) to O(n * m) - checks the nearby entities.
     for (auto entityA : Entities)
@@ -48,13 +44,13 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
 
         for (auto entityB : nearby)
         {
-            if (entityA == entityB) {
+            if (entityA == entityB)
+            {
                 continue;
             }
 
             if (entityA >= entityB)
             {
-
                 continue;
             }
 
@@ -65,7 +61,8 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
 
             if (shouldCollide && aabbHit)
             {
-                mCollisionEvents.push_back({
+                mCollisionEvents.push_back
+                ({
                     entityA,
                     entityB,
                     collisionA.Layer,
@@ -74,8 +71,6 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
             }
         }
     }
-
-
 }
 
 const std::vector<CollisionEvent> & CollisionSystem::GetCollisionEvent() const

@@ -7,10 +7,13 @@
 #include "Core/AssetManager.h"
 #include "Core/Coordinator.h"
 #include "SFML/Graphics/RenderWindow.hpp"
+#include "Systems/AnimationSystem.h"
 #include "Systems/GridMovementSystem.h"
 #include "Systems/CollisionSystem.h"
+#include "Systems/GameModeSystem.h"
 #include "Systems/RenderSystem.h"
 #include "Systems/InputSystem.h"
+#include "Systems/MovementSystem.h"
 
 class Game
 {
@@ -30,14 +33,20 @@ private:
 
     sf::RenderWindow mWindow;
 
+    Entity mPlayer;
+    Entity mGameRuleEntity;
+    Entity mGameStateEntity;
+    sf::Clock mClock;
+    AssetManager mAssetManager;
+
     Coordinator mCoordinator;
     std::shared_ptr<GridMovementSystem> mGridMovementSystem;
     std::shared_ptr<InputSystem> mInputSystem;
-    Entity mPlayer;
-    sf::Clock mClock;
-    AssetManager mAssetManager;
     std::shared_ptr<CollisionSystem> mCollisionSystem;
     std::shared_ptr<RenderSystem> mRenderSystem;
+    std::shared_ptr<GameModeSystem> mGameModeSystem;
+    std::shared_ptr<MovementSystem> mMovementSystem;
+    std::shared_ptr<AnimationSystem> mAnimationSystem;
 
     bool bDebug;
 };

@@ -25,6 +25,7 @@ public:
     float HopProgress   = 0.f;
 
     sf::Vector2i GridPosition;
+    sf::Vector2i SpawnGridPosition;
 
 };
 #endif //MOVEMENTCOMPONENT_H

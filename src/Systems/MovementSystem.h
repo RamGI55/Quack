@@ -5,6 +5,7 @@
 #ifndef DUCKDUCKROAD_MOVEMENTSYSTEM_H
 #define DUCKDUCKROAD_MOVEMENTSYSTEM_H
 #include "../Core/System.h"
+#include "../Core/SystemManager.h"
 
 
 class Coordinator;
@@ -12,8 +13,9 @@ class Coordinator;
 class MovementSystem : public System
 {
 public:
+    MovementSystem(SystemManager* manager = nullptr);
     void init();
-    void update(float dt, Coordinator& coordinator);
+    void Update(float dt, Coordinator& coordinator);
 };
 
 

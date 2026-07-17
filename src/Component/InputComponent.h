@@ -41,6 +41,8 @@ struct InputComponent
     float maxSpeed      = 200.f;
     float InputCoolTime = 0.f;
 
+    bool bInputBlocked = false;
+
 };
 
 
