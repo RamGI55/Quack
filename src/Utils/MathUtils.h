@@ -24,7 +24,7 @@ namespace MathUtils
         std::random_device rd;
         std::mt19937 rng(rd());
         std::uniform_int_distribution<std::mt19937::result_type> distribution(min, max);
-        return distribution(rng);
+        return (int)distribution(rng);
     }
 }
 

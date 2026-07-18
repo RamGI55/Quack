@@ -23,6 +23,12 @@ public:
     std::vector<int> GetOverlappingCells(const sf::FloatRect& BoundingBox) const;
     void Clear();
 
+    // Debug/render accessors - expose grid layout so it can be drawn on screen.
+    float GetCellSize() const { return mCellSize; }
+    unsigned int GetGridWidth() const { return mGridWidth; }
+    unsigned int GetGridHeight() const { return mGridHeight; }
+    bool IsCellOccupied(int Index) const { return IsValidIndex(Index) && !mCells[Index].empty(); }
+
 
 
 private:

@@ -27,6 +27,7 @@ public:
     void Init(float CellSize, unsigned int WorldWidth, unsigned int WorldHeight);
     void Update(float dt, Coordinator& coordinator);
     [[nodiscard]] const std::vector<CollisionEvent>& GetCollisionEvent() const;
+    [[nodiscard]] const SpatialGrid& GetGrid() const { return *mGrid; }
     void ClearEvents();
 
 private:

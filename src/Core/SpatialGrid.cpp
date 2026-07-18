@@ -27,11 +27,12 @@ void SpatialGrid::Insert(Entity InEntity, const sf::FloatRect& BoundingBox)
 {
     sf::Vector2f centre = BoundingBox.getCenter();
     int idx = PositionToIndex(centre.x, centre.y);
-    
+
     if (!IsValidIndex(idx)) return;
-    
+
     mCells[idx].push_back(InEntity);
     mEntityToCell[InEntity] = idx;
+
 }
 
 void SpatialGrid::Remove(Entity InEntity)
@@ -54,9 +55,9 @@ void SpatialGrid::Update(Entity InEntity, const sf::FloatRect& BoundingBox)
 {
     sf::Vector2f centre = BoundingBox.getCenter();
     int newIdx = PositionToIndex(centre.x, centre.y);
-    
+
     if (!IsValidIndex(newIdx)) return;
-    
+
     auto it = mEntityToCell.find(InEntity);
     if (it == mEntityToCell.end())
     {
@@ -65,10 +66,10 @@ void SpatialGrid::Update(Entity InEntity, const sf::FloatRect& BoundingBox)
         mEntityToCell[InEntity] = newIdx;
         return;
     }
-    
+
     int oldIdx = it->second;
     if (oldIdx == newIdx) return;  // Same cell, no change
-    
+
     // Move to new cell
     auto& oldCell = mCells[oldIdx];
     auto findIt = std::find(oldCell.begin(), oldCell.end(), InEntity);
@@ -76,7 +77,7 @@ void SpatialGrid::Update(Entity InEntity, const sf::FloatRect& BoundingBox)
     {
         oldCell.erase(findIt);
     }
-    
+
     mCells[newIdx].push_back(InEntity);
     mEntityToCell[InEntity] = newIdx;
 }
@@ -84,13 +85,13 @@ void SpatialGrid::Update(Entity InEntity, const sf::FloatRect& BoundingBox)
 std::vector<Entity> SpatialGrid::GetNearby(const sf::FloatRect& BoundingBox) const
 {
     std::vector<Entity> result;
-    
+
     // Get cell from center of bounding box
     // TODO: Transition float to int is quite expensive, is any alternatives?
     sf::Vector2f centre = BoundingBox.getCenter();
     int centerCellX = static_cast<int>(centre.x / mCellSize);
     int centerCellY = static_cast<int>(centre.y / mCellSize);
-    
+
     // Check 3x3 area around center cell
     for (int dy = -1; dy <= 1; dy++)
     {
@@ -98,13 +99,13 @@ std::vector<Entity> SpatialGrid::GetNearby(const sf::FloatRect& BoundingBox) con
         {
             int checkX = centerCellX + dx;
             int checkY = centerCellY + dy;
-            
+
             // Bounds check
             if (checkX < 0 || checkX >= mGridWidth) continue;
             if (checkY < 0 || checkY >= mGridHeight) continue;
-            
+
             int cellIdx = checkY * mGridWidth + checkX;
-            
+
             // Add all entities in this cell
             for (Entity e : mCells[cellIdx])
             {
@@ -112,7 +113,7 @@ std::vector<Entity> SpatialGrid::GetNearby(const sf::FloatRect& BoundingBox) con
             }
         }
     }
-    
+
     return result;
 }
 

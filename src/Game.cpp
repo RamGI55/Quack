@@ -7,6 +7,7 @@
 #include "Component/AnimationComponent.h"
 #include "Component/GameStateComponent.h"
 #include "Component/InputComponent.h"
+#include "Component/LaneComponent.h"
 #include "Component/MovementComponent.h"
 #include "Component/PawnComponent.h"
 #include "Component/PlayerComponent.h"
@@ -49,6 +50,7 @@ void Game::Init()
     mGameModeSystem = mCoordinator.RegisterSystem<GameModeSystem>();
     mMovementSystem = mCoordinator.RegisterSystem<MovementSystem>();
     mAnimationSystem = mCoordinator.RegisterSystem<AnimationSystem>();
+    mTrafficSpawnSystem = mCoordinator.RegisterSystem<TrafficSpawnSystem>();
 
     mCoordinator.RegisterComponent<InputComponent>();
     mCoordinator.RegisterComponent<TransformComponent>();
@@ -62,8 +64,9 @@ void Game::Init()
     mCoordinator.RegisterComponent<SoundComponent>();
     mCoordinator.RegisterComponent<AnimationComponent>();
     mCoordinator.RegisterComponent<FrogGameStateComponent>();
+    mCoordinator.RegisterComponent<LaneComponent>();
 
-    mCollisionSystem->Init(64.f,mWindowHeight, mWindowWidth);
+    mCollisionSystem->Init(64.f, mWindowWidth, mWindowHeight);
 
     Signature inputSig;
     inputSig.set(mCoordinator.GetComponentType<InputComponent>());
@@ -99,6 +102,10 @@ void Game::Init()
     ruleSig.set(mCoordinator.GetComponentType<GameStateComponent>());
     mCoordinator.SetSystemSignature<GameModeSystem>(ruleSig);
 
+    Signature laneSig;
+    laneSig.set(mCoordinator.GetComponentType<LaneComponent>());
+    mCoordinator.SetSystemSignature<TrafficSpawnSystem>(laneSig);
+
     EntityDef playerDef{.type = "player", .spawnX = 15, .spawnY = 15, .cellSize = 64.f};
     EntityDef CarDef {.type = "car", .spawnX = 550, .spawnY = 150, .cellSize = 50.f};
 
@@ -116,7 +123,7 @@ void Game::Init()
     assets.Load<sf::SoundBuffer>("sound_gangnamyeoja", "resources/Sound/sound_gangnam.mp3");
     assets.Load<sf::SoundBuffer>("sound_gangnamop", "resources/Sound/sound_gangnamop.mp3");
     assets.Load<sf::SoundBuffer>("sound_gangnamahh", "resources/Sound/sound_gangnamFast.mp3");
-    // assets.Load<sf::SoundBuffer>("sound_train", "resources/Sound/sound_train.mp3");
+    assets.Load<sf::SoundBuffer>("sound_train", "resources/Sound/sound_train.mp3");
     assets.Load<sf::Font>("font_main", "resources/Font/PixelifySans-Regular.ttf");
 
     mGameRuleEntity = mCoordinator.CreateEntity();
@@ -161,9 +168,9 @@ void Game::Init()
     goalCol.CollisionRect.size = { static_cast<float>(mWindowWidth), 64.f };
     goalCol.Layer    = static_cast<uint32_t>(QKCollisionType::Goal);
     goalCol.Mask     = static_cast<uint32_t>(QKCollisionType::Player);
-    goalCol.IsStatic = true;
+    goalCol.IsStatic = false;
 
-    mCoordinator.AddComponent(goal, TransformComponent{.Position = {mWindowWidth / 2.f, 32.f}});
+    mCoordinator.AddComponent(goal, TransformComponent{.Position = {mWindowWidth /2.0f , 32.f}});
     mCoordinator.AddComponent(goal, goalCol);
 }
 
@@ -240,6 +247,7 @@ void Game::Render()
     if (bDebug == true)
     {
         CollisionUtils::DebugAABB(mWindow, *mCollisionSystem, mCoordinator);
+        CollisionUtils::ShowGrid(mWindow, *mCollisionSystem);
     }
     mWindow.display();
 }

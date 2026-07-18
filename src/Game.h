@@ -14,8 +14,9 @@
 #include "Systems/RenderSystem.h"
 #include "Systems/InputSystem.h"
 #include "Systems/MovementSystem.h"
+#include "Systems/TrafficSpawnSystem.h"
 
-class Game
+    class Game
 {
 public:
     Game();
@@ -47,6 +48,7 @@ private:
     std::shared_ptr<GameModeSystem> mGameModeSystem;
     std::shared_ptr<MovementSystem> mMovementSystem;
     std::shared_ptr<AnimationSystem> mAnimationSystem;
+    std::shared_ptr<TrafficSpawnSystem> mTrafficSpawnSystem;
 
     bool bDebug;
 };

@@ -4,6 +4,9 @@
 
 #include "CollisionSystem.h"
 
+#include <iostream>
+#include <unordered_set>
+
 #include "../Component/CollisionComponent.h"
 #include "../Component/TransformComponent.h"
 
@@ -41,6 +44,33 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
     {
         auto& collisionA = coordinator.GetComponent<AABBCollisionComponent>(entityA);
         auto nearby = mGrid->GetNearby(collisionA.CollisionRect);
+
+        // TEMP DEBUG: brute-force ground truth (no grid involved), diffed against the
+        // grid's candidate list. Any entity that truly overlaps but is missing from
+        // `nearby` proves the grid - not layer/mask logic or CheckAABB - dropped it.
+        {
+            std::unordered_set<Entity> nearbySet(nearby.begin(), nearby.end());
+            for (auto entityB : Entities)
+            {
+                if (entityB == entityA) continue;
+                auto& bruteCollisionB = coordinator.GetComponent<AABBCollisionComponent>(entityB);
+                auto overlap = collisionA.CollisionRect.findIntersection(bruteCollisionB.CollisionRect);
+                if (overlap.has_value() && nearbySet.find(entityB) == nearbySet.end())
+                {
+                    const auto& boxA = collisionA.CollisionRect;
+                    const auto& boxB = bruteCollisionB.CollisionRect;
+                    std::cout << "[AABB HIT / GRID MISS] "
+                              << "entityA=" << entityA
+                              << " boxA=(" << boxA.position.x << "," << boxA.position.y
+                              << " " << boxA.size.x << "x" << boxA.size.y << ")"
+                              << " entityB=" << entityB
+                              << " boxB=(" << boxB.position.x << "," << boxB.position.y
+                              << " " << boxB.size.x << "x" << boxB.size.y << ")"
+                              << " overlap=(" << overlap->position.x << "," << overlap->position.y
+                              << " " << overlap->size.x << "x" << overlap->size.y << ")\n";
+                }
+            }
+        }
 
         for (auto entityB : nearby)
         {
