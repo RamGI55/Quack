@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include "Types.h"
 #include <vector>
-#include <set>
 #include <algorithm>
 #include "SFML/Graphics/Rect.hpp"
 

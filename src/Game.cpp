@@ -66,7 +66,13 @@ void Game::Init()
     mCoordinator.RegisterComponent<FrogGameStateComponent>();
     mCoordinator.RegisterComponent<LaneComponent>();
 
-    mCollisionSystem->Init(64.f, mWindowWidth, mWindowHeight);
+    // TODO: mGameView will be part of the camera component, must be dynamic later.
+    mGameView.setSize ({mGameViewWidth, mGameViewHeight});
+    mGameView.setCenter({mGameViewWidth / 2.f, mGameViewHeight / 2.f});
+    mGameView.setViewport(sf::FloatRect( {mMarginX / mWindowWidth, mMarginY / mWindowHeight},
+{1.f - 2.f * mMarginX / mWindowWidth, 1.f - 2.f * mMarginY / mWindowHeight}));
+
+    mCollisionSystem->Init(64.f, mGameViewWidth, mGameViewHeight);
 
     Signature inputSig;
     inputSig.set(mCoordinator.GetComponentType<InputComponent>());
@@ -109,7 +115,7 @@ void Game::Init()
     EntityDef playerDef{.type = "player", .spawnX = 15, .spawnY = 15, .cellSize = 64.f};
     EntityDef CarDef {.type = "car", .spawnX = 550, .spawnY = 150, .cellSize = 50.f};
 
-    // TODO: Hardcoded the asset loading, implments key generation algorithm in the asset loading.
+    // TODO: Hardcoded the asset loading, implements key generation algorithm in the asset loading.
     assets.Load<sf::Texture>("player_tex", "resources/Duck/duck-Sheet.png");
     assets.Load<sf::Texture>("car_tex", "resources/Coupe/coupe_blue.png");
     assets.Load<sf::Texture>("coup_green", "resources/Coupe/coupe_green.png");
@@ -229,7 +235,24 @@ void Game::Render()
 {
     auto& transform = mCoordinator.GetComponent<TransformComponent>(mPlayer);
     mWindow.clear(sf::Color::Black);
+
+    sf::RectangleShape boundary({mGameViewWidth, mGameViewHeight});
+    boundary.setPosition({mMarginX, mMarginY});
+    boundary.setFillColor(sf::Color::Transparent);
+    boundary.setOutlineColor(sf::Color::White);
+    boundary.setOutlineThickness(2.f);
+    mWindow.draw(boundary);
+
+    mWindow.setView(mGameView);
     mRenderSystem->update(mWindow, mCoordinator);
+
+    if (bDebug == true)
+    {
+        CollisionUtils::DebugAABB(mWindow, *mCollisionSystem, mCoordinator);
+        CollisionUtils::ShowGrid(mWindow, *mCollisionSystem);
+    }
+
+    mWindow.setView(mWindow.getDefaultView());
 
     auto& gameState = mCoordinator.GetComponent<GameStateComponent>(mGameStateEntity);
     auto& frogState = mCoordinator.GetComponent<FrogGameStateComponent>(mGameStateEntity);
@@ -244,11 +267,6 @@ void Game::Render()
     mWindow.draw(hudText);
     mWindow.draw(scoreText);
 
-    if (bDebug == true)
-    {
-        CollisionUtils::DebugAABB(mWindow, *mCollisionSystem, mCoordinator);
-        CollisionUtils::ShowGrid(mWindow, *mCollisionSystem);
-    }
     mWindow.display();
 }
 

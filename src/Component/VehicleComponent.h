@@ -18,6 +18,7 @@ struct VehicleComponent
     float Speed;
     float Width;
     EVehicleType Type;
+    bool bIsInLane;
 };
 
 #endif //DUCKDUCKROAD_VEHICLECOMPONENT_H

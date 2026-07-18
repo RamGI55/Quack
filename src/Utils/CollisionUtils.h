@@ -58,10 +58,12 @@ namespace CollisionUtils
 
                 rect.setPosition(sf::Vector2f(screenX, screenY));
                 rect.setSize(sf::Vector2f(grid.GetCellSize(), grid.GetCellSize()));
+                if (grid.IsCellOccupied(idx))
+                {
+                    rect.setFillColor(sf::Color::Blue);
+                }
 
                 inWindow.draw(rect);
-
-                bool occupied = grid.IsCellOccupied(idx);
             }
         }
     }

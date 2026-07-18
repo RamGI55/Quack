@@ -15,6 +15,12 @@ int SpatialGrid::PositionToIndex(float x, float y) const
     int cellX = static_cast<int>(x / mCellSize);
     int cellY = static_cast<int>(y / mCellSize);
 
+    if (cellX < 0 || cellX >= static_cast<int>(mGridWidth) ||
+        cellY < 0 || cellY >= static_cast<int>(mGridHeight))
+    {
+        return -1;
+    }
+
     return cellY * mGridWidth + cellX;
 }
 
@@ -28,7 +34,11 @@ void SpatialGrid::Insert(Entity InEntity, const sf::FloatRect& BoundingBox)
     sf::Vector2f centre = BoundingBox.getCenter();
     int idx = PositionToIndex(centre.x, centre.y);
 
-    if (!IsValidIndex(idx)) return;
+    if (!IsValidIndex(idx))
+    {
+        Remove(InEntity);
+        return;
+    }
 
     mCells[idx].push_back(InEntity);
     mEntityToCell[InEntity] = idx;
@@ -56,7 +66,12 @@ void SpatialGrid::Update(Entity InEntity, const sf::FloatRect& BoundingBox)
     sf::Vector2f centre = BoundingBox.getCenter();
     int newIdx = PositionToIndex(centre.x, centre.y);
 
-    if (!IsValidIndex(newIdx)) return;
+    if (!IsValidIndex(newIdx))
+    {
+        Remove(InEntity);
+        return;
+    }
+
 
     auto it = mEntityToCell.find(InEntity);
     if (it == mEntityToCell.end())

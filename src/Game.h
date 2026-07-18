@@ -30,13 +30,20 @@ private:
 
     unsigned int mWindowWidth = 1920u;
     unsigned int mWindowHeight = 1080u;
+    float mGameViewWidth = 1600.0f;
+    float mGameViewHeight = 1080.0f;
+    float mMarginX = 160.f;
+    float mMarginY = 0.0f;
     uint32_t mMaxFramerate = 144;
 
     sf::RenderWindow mWindow;
+    sf::View mGameView;
 
     Entity mPlayer;
     Entity mGameRuleEntity;
     Entity mGameStateEntity;
+    Entity mCameraEntity;
+
     sf::Clock mClock;
     AssetManager mAssetManager;
 
