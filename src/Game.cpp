@@ -250,6 +250,7 @@ void Game::Render()
     {
         CollisionUtils::DebugAABB(mWindow, *mCollisionSystem, mCoordinator);
         CollisionUtils::ShowGrid(mWindow, *mCollisionSystem);
+        CollisionUtils::DebugEntityIds(mWindow, *mCollisionSystem, mCoordinator, *mAssetManager.Get<sf::Font>("font_main"));
     }
 
     mWindow.setView(mWindow.getDefaultView());

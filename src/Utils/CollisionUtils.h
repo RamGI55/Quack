@@ -8,8 +8,11 @@
 #include "../Core/Coordinator.h"
 #include "../Core/SpatialGrid.h"
 #include "../Systems/CollisionSystem.h"
+#include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
+#include "SFML/Graphics/Text.hpp"
+#include <string>
 
 struct AABBCollisionComponent;
 class Coordinator;
@@ -33,6 +36,19 @@ namespace CollisionUtils
             }
         }
 
+    }
+
+    inline void DebugEntityIds(sf::RenderWindow& inWindow, System& inSystem, Coordinator& inCoordinator, const sf::Font& inFont)
+    {
+        for (auto& entity: inSystem.Entities)
+        {
+            auto& col = inCoordinator.GetComponent<AABBCollisionComponent>(entity);
+
+            sf::Text idText(inFont, std::to_string(entity), 14);
+            idText.setFillColor(sf::Color::Yellow);
+            idText.setPosition({col.CollisionRect.position.x, col.CollisionRect.position.y - 5.f});
+            inWindow.draw(idText);
+        }
     }
 
     void ShowGrid(sf::RenderWindow& inWindow, const CollisionSystem& collisionSystem)
