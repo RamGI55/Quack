@@ -4,8 +4,10 @@
 
 #ifndef DUCKDUCKROAD_GAME_H
 #define DUCKDUCKROAD_GAME_H
+#include <optional>
 #include "Core/AssetManager.h"
 #include "Core/Coordinator.h"
+#include "SFML/Audio/Sound.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "Systems/AnimationSystem.h"
 #include "Systems/GridMovementSystem.h"
@@ -46,6 +48,8 @@ private:
 
     sf::Clock mClock;
     AssetManager mAssetManager;
+    std::optional<sf::Sound> mTestSound;
+    std::optional<sf::Sound> mGoalSound;
 
     Coordinator mCoordinator;
     std::shared_ptr<GridMovementSystem> mGridMovementSystem;

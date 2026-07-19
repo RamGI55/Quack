@@ -5,6 +5,7 @@
 #ifndef COLLISIONUTILS_H
 #define COLLISIONUTILS_H
 #include "../Component/CollisionComponent.h"
+#include "../Component/TransformComponent.h"
 #include "../Core/Coordinator.h"
 #include "../Core/SpatialGrid.h"
 #include "../Systems/CollisionSystem.h"
@@ -12,6 +13,7 @@
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Text.hpp"
+#include <functional>
 #include <string>
 
 struct AABBCollisionComponent;
@@ -82,6 +84,37 @@ namespace CollisionUtils
                 inWindow.draw(rect);
             }
         }
+    }
+}
+
+namespace DebugUtils
+{
+    // inLayerToString is optional: maps AABBCollisionComponent::Layer to a readable
+    // name (e.g. QKCollisionType). Pass nullptr to fall back to the raw numeric layer.
+    inline void ShowEntitylist(sf::RenderWindow& inWindow, System& inSystem, Coordinator& inCoordinator,
+                                const sf::Font& inFont,
+                                const std::function<std::string(uint32_t)>& inLayerToString = nullptr,
+                                sf::Vector2f inPanelPosition = {10.f, 100.f})
+    {
+        std::string listStr = "ENTITIES (" + std::to_string(inSystem.Entities.size()) + ")\n";
+
+        for (const auto& entity: inSystem.Entities)
+        {
+            const auto& transform = inCoordinator.GetComponent<TransformComponent>(entity);
+            const auto& col       = inCoordinator.GetComponent<AABBCollisionComponent>(entity);
+
+            const std::string typeStr = inLayerToString ? inLayerToString(col.Layer) : std::to_string(col.Layer);
+
+            listStr += "ID:" + std::to_string(entity)
+                    + "  Type:" + typeStr
+                    + "  Pos:(" + std::to_string(static_cast<int>(transform.Position.x))
+                    + ", " + std::to_string(static_cast<int>(transform.Position.y)) + ")\n";
+        }
+
+        sf::Text listText(inFont, listStr, 14);
+        listText.setFillColor(sf::Color::Yellow);
+        listText.setPosition(inPanelPosition);
+        inWindow.draw(listText);
     }
 }
 #endif //COLLISIONUTILS_H

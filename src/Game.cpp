@@ -112,8 +112,8 @@ void Game::Init()
     laneSig.set(mCoordinator.GetComponentType<LaneComponent>());
     mCoordinator.SetSystemSignature<TrafficSpawnSystem>(laneSig);
 
-    EntityDef playerDef{.type = "player", .spawnX = 15, .spawnY = 15, .cellSize = 64.f};
-    EntityDef CarDef {.type = "car", .spawnX = 550, .spawnY = 150, .cellSize = 50.f};
+    EntityDef playerDef{.type = "player", .spawnX = 15, .spawnY = 15, .cellSize = 64.f, "player_tex"};
+    EntityDef CarDef {.type = "car", .spawnX = 550, .spawnY = 150, .cellSize = 64.f};
 
     // TODO: Hardcoded the asset loading, implements key generation algorithm in the asset loading.
     assets.Load<sf::Texture>("player_tex", "resources/Duck/duck-Sheet.png");
@@ -163,9 +163,42 @@ void Game::Init()
     carSprite.Sprite->setScale({50.f / carTexSize.x, 50.f / carTexSize.y});
     mCoordinator.AddComponent(car, carSprite);
 
-    mCoordinator.AddComponent(car, col);
-    PlayerFactory player1(mCoordinator, assets);
+    Entity car2 = mCoordinator.CreateEntity();
 
+    sf::Vector2f car2Pos{100, 210};
+    sf::Vector2i car2spawnGrid = {CarDef.spawnX, CarDef.spawnY};
+
+    mCoordinator.AddComponent(car2, TransformComponent{.Position = car2Pos, .Angle = sf::degrees(90.f)});
+    mCoordinator.AddComponent(car2, GridMovementComponent{.GridPosition = carspawnGrid});
+    mCoordinator.AddComponent(car2, VelocityComponent{.Velocity = {250.f, 0.0f}});
+
+    AABBCollisionComponent col2;
+    col2.CollisionRect.size = { 70.f, 50.f };
+    col2.Layer = static_cast<uint32_t>(QKCollisionType::Enemy);
+    col2.Mask  = static_cast<uint32_t>(QKCollisionType::Player);
+
+    SpriteComponent car2Sprite;
+    car2Sprite.setTexture(assets.Get<sf::Texture>("car_tex"));
+    const sf::Vector2u car2TexSize = car2Sprite.Texture->getSize();
+    car2Sprite.Sprite->setOrigin({car2TexSize.x / 2.f, car2TexSize.y / 2.f});
+    car2Sprite.Sprite->setScale({50.f / car2TexSize.x, 50.f / car2TexSize.y});
+    mCoordinator.AddComponent(car2, car2Sprite);
+
+    mCoordinator.AddComponent(car, col);
+
+    VehicleFactory bubeCar(mCoordinator, assets);
+    EntityDef bubeDef {.type = "car", .spawnX = 0, .spawnY = 10, .cellSize = 64.f, .keyTexture = "coup_red", .Velocity = 110.0f};
+    Entity bube = bubeCar.Create(bubeDef);
+
+    VehicleFactory bube2Car(mCoordinator, assets);
+    EntityDef bube2Def {.type = "car", .spawnX = 20u, .spawnY = 7, .cellSize = 64.f, .keyTexture = "coup_red", .Velocity = -650.0f};
+    Entity bube2 = bube2Car.Create(bube2Def);
+
+    VehicleFactory YongmanCar(mCoordinator, assets);
+    EntityDef YongmanDef {.type = "car", .spawnX = 30, .spawnY = 3, .cellSize = 64.f, .keyTexture = "coup_green", .Velocity = -450.0f};
+    Entity Yongman = YongmanCar.Create(YongmanDef);
+
+    PlayerFactory player1(mCoordinator, assets);
     mPlayer = player1.Create(playerDef);
 
     // Goal strip along the top of the screen - duck reaching it scores.
@@ -193,42 +226,52 @@ void Game::ProcessEvents()
             bDebug = true;
         }
     }
-
 }
 
 void Game::Update(float dt)
 {
+    auto& gameState = mCoordinator.GetComponent<GameStateComponent>(mGameStateEntity);
     mInputSystem->Update(dt, mCoordinator);
-    mGridMovementSystem->Update(dt, mCoordinator);
-    mMovementSystem->Update(dt, mCoordinator);
-    mCollisionSystem->Update(dt, mCoordinator);
-    mAnimationSystem->Update(dt, mCoordinator);
-    mGameModeSystem->Update(dt, mCoordinator);
-
-    for (const auto& event : mCollisionSystem->GetCollisionEvent())
+    
+    if (gameState.state != GameState::GameOver)
     {
-        const uint32_t playerLayer = static_cast<uint32_t>(QKCollisionType::Player);
-        const uint32_t enemyLayer  = static_cast<uint32_t>(QKCollisionType::Enemy);
-        const uint32_t goalLayer   = static_cast<uint32_t>(QKCollisionType::Goal);
+        mGridMovementSystem->Update(dt, mCoordinator);
+        mMovementSystem->Update(dt, mCoordinator);
+        mCollisionSystem->Update(dt, mCoordinator);
+        mAnimationSystem->Update(dt, mCoordinator);
+        mGameModeSystem->Update(dt, mCoordinator);
 
-        bool isPlayerVsEnemy = (event.LayerA == playerLayer && event.LayerB == enemyLayer)
-                            || (event.LayerA == enemyLayer && event.LayerB == playerLayer);
-        bool isPlayerVsGoal  = (event.LayerA == playerLayer && event.LayerB == goalLayer)
-                            || (event.LayerA == goalLayer && event.LayerB == playerLayer);
+        for (const auto& event : mCollisionSystem->GetCollisionEvent())
+        {
+            const uint32_t playerLayer = static_cast<uint32_t>(QKCollisionType::Player);
+            const uint32_t enemyLayer  = static_cast<uint32_t>(QKCollisionType::Enemy);
+            const uint32_t goalLayer   = static_cast<uint32_t>(QKCollisionType::Goal);
 
-        if (isPlayerVsEnemy)
-        {
-            Entity pawn = (event.LayerA == playerLayer) ? event.EntityA : event.EntityB;
-            mGameModeSystem->LifeLostEvent(mGameStateEntity, mCoordinator);
-            mGridMovementSystem->ResetToSpawn(pawn, mCoordinator);
-        }
-        else if (isPlayerVsGoal)
-        {
-            Entity pawn = (event.LayerA == playerLayer) ? event.EntityA : event.EntityB;
-            mGameModeSystem->DuckSavedEvent(mGameStateEntity, mCoordinator);
-            mGridMovementSystem->ResetToSpawn(pawn, mCoordinator);
+            bool isPlayerVsEnemy = (event.LayerA == playerLayer && event.LayerB == enemyLayer)
+                                || (event.LayerA == enemyLayer && event.LayerB == playerLayer);
+            bool isPlayerVsGoal  = (event.LayerA == playerLayer && event.LayerB == goalLayer)
+                                || (event.LayerA == goalLayer && event.LayerB == playerLayer);
+
+            if (isPlayerVsEnemy)
+            {
+                Entity pawn = (event.LayerA == playerLayer) ? event.EntityA : event.EntityB;
+                mGameModeSystem->LifeLostEvent(mGameStateEntity, mCoordinator);
+                mGridMovementSystem->ResetToSpawn(pawn, mCoordinator);
+                mTestSound.emplace(*mAssetManager.Get<sf::SoundBuffer>("sound_dead"));
+                mTestSound->play();
+
+            }
+            else if (isPlayerVsGoal)
+            {
+                Entity pawn = (event.LayerA == playerLayer) ? event.EntityA : event.EntityB;
+                mGameModeSystem->DuckSavedEvent(mGameStateEntity, mCoordinator);
+                mGridMovementSystem->ResetToSpawn(pawn, mCoordinator);
+                mGoalSound.emplace(*mAssetManager.Get<sf::SoundBuffer>("sound_gangnamahh"));
+                mGoalSound->play();
+            }
         }
     }
+
 }
 
 void Game::Render()
@@ -253,7 +296,26 @@ void Game::Render()
         CollisionUtils::DebugEntityIds(mWindow, *mCollisionSystem, mCoordinator, *mAssetManager.Get<sf::Font>("font_main"));
     }
 
+    // UI
     mWindow.setView(mWindow.getDefaultView());
+
+    if (bDebug == true)
+    {
+        static const auto layerToString = [](uint32_t inLayer) -> std::string
+        {
+            switch (static_cast<QKCollisionType>(inLayer))
+            {
+                case QKCollisionType::Player:  return "Player";
+                case QKCollisionType::Enemy:   return "Enemy";
+                case QKCollisionType::Terrain: return "Terrain";
+                case QKCollisionType::Blocked: return "Blocked";
+                case QKCollisionType::Goal:    return "Goal";
+                default:                       return "Default";
+            }
+        };
+        DebugUtils::ShowEntitylist(mWindow, *mCollisionSystem, mCoordinator,
+                                    *mAssetManager.Get<sf::Font>("font_main"), layerToString);
+    }
 
     auto& gameState = mCoordinator.GetComponent<GameStateComponent>(mGameStateEntity);
     auto& frogState = mCoordinator.GetComponent<FrogGameStateComponent>(mGameStateEntity);
