@@ -15,7 +15,6 @@
 #include "Component/TransformComponent.h"
 #include "Component/VelocityComponent.h"
 #include "Factory/EntityFactory.h"
-#include "Games/Quack/QuackGlobal.h"
 #include "SFML/Graphics/Text.hpp"
 #include "Systems/RenderSystem.h"
 #include "Utils/CollisionUtils.h"
