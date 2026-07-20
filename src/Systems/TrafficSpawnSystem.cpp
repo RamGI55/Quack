@@ -46,5 +46,5 @@ void TrafficSpawnSystem::ProcessLaneSpawn(float dt, Coordinator& coordinator, As
 {
     VehicleFactory pooledVehicle(coordinator, assets);
     EntityDef EntityDef;
-    
+
 }
