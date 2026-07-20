@@ -14,6 +14,7 @@
 #include "../Core/Types.h"
 #include "SFML/System/Vector2.hpp"
 #include "../Component/TransformComponent.h"
+#include "../Component/VehicleComponent.h"
 #include "../Games/Quack/QKCollisionLayer.h"
 #include "../Core/AssetManager.h"
 
@@ -111,6 +112,8 @@ public:
             spawnGrid.x * cellSize + cellSize / 2,
             spawnGrid.y * cellSize + cellSize / 2
         };
+
+        VehicleComponent vehicleComp;
 
         AABBCollisionComponent vehicleCol;
         vehicleCol.CollisionRect.size = { cellSize, cellSize };

@@ -29,6 +29,7 @@ public:
 
 private:
     std::vector<Entity> OnReadyTraffics;
+    int onReadyPoolSize = 100;
 };
 
 

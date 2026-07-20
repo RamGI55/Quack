@@ -48,7 +48,7 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
         // TEMP DEBUG: brute-force ground truth (no grid involved), diffed against the
         // grid's candidate list. Any entity that truly overlaps but is missing from
         // `nearby` proves the grid - not layer/mask logic or CheckAABB - dropped it.
-        {
+        /*{
             std::unordered_set<Entity> nearbySet(nearby.begin(), nearby.end());
             for (auto entityB : Entities)
             {
@@ -70,7 +70,7 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
                               << " " << overlap->size.x << "x" << overlap->size.y << ")\n";
                 }
             }
-        }
+        }*/
 
         for (auto entityB : nearby)
         {

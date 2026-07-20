@@ -7,7 +7,7 @@
 
 enum EVehicleType
 {
-    None  = 0,
+    Default  = 0,
     Small = 1 << 0,
     Train = 1 << 1,
     Log   = 1 << 2,
@@ -19,6 +19,8 @@ struct VehicleComponent
     float Width;
     EVehicleType Type;
     bool bIsInLane;
+    std::string soundKey;
+    std::string collisionSoundKey;
 };
 
 #endif //DUCKDUCKROAD_VEHICLECOMPONENT_H

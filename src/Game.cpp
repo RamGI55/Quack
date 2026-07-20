@@ -15,6 +15,7 @@
 #include "Component/TransformComponent.h"
 #include "Component/VelocityComponent.h"
 #include "Factory/EntityFactory.h"
+#include "Games/Quack/QuackGlobal.h"
 #include "SFML/Graphics/Text.hpp"
 #include "Systems/RenderSystem.h"
 #include "Utils/CollisionUtils.h"
@@ -116,11 +117,17 @@ void Game::Init()
     EntityDef CarDef {.type = "car", .spawnX = 550, .spawnY = 150, .cellSize = 64.f};
 
     // TODO: Hardcoded the asset loading, implements key generation algorithm in the asset loading.
+
+
     assets.Load<sf::Texture>("player_tex", "resources/Duck/duck-Sheet.png");
     assets.Load<sf::Texture>("car_tex", "resources/Coupe/coupe_blue.png");
     assets.Load<sf::Texture>("coup_green", "resources/Coupe/coupe_green.png");
     assets.Load<sf::Texture>("coup_midnight", "resources/Coupe/coupe_midnight.png");
     assets.Load<sf::Texture>("coup_red", "resources/Coupe/coupe_red.png");
+    assets.Load<sf::Texture>("duck_block", "resources/Tile/Duck_Block.png");
+    assets.Load<sf::Texture>("duck_road", "resources/Tile/Duck_Road.png");
+    assets.Load<sf::Texture>("duck_safe", "resources/Tile/Duck_Safe.png");
+    assets.Load<sf::Texture>("duck_train", "resources/Tile/Duck_Train.png");
     assets.Load<sf::SoundBuffer>("sound_quack", "resources/Sound/sound_quack.mp3");
     assets.Load<sf::SoundBuffer>("sound_quack2", "resources/Sound/sound_quack2.mp3");
     assets.Load<sf::SoundBuffer>("sound_dead", "resources/Sound/sound_dead.mp3");
@@ -131,6 +138,8 @@ void Game::Init()
     assets.Load<sf::SoundBuffer>("sound_gangnamahh", "resources/Sound/sound_gangnamFast.mp3");
     assets.Load<sf::SoundBuffer>("sound_train", "resources/Sound/sound_train.mp3");
     assets.Load<sf::Font>("font_main", "resources/Font/PixelifySans-Regular.ttf");
+
+    assets.Get<sf::Texture>("duck_road")->setRepeated(true);
 
     mGameRuleEntity = mCoordinator.CreateEntity();
     mCoordinator.AddComponent(mGameRuleEntity, GameRuleComponent{.InitTime = 300.f});

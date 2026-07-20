@@ -28,8 +28,6 @@ public:
     unsigned int GetGridHeight() const { return mGridHeight; }
     bool IsCellOccupied(int Index) const { return IsValidIndex(Index) && !mCells[Index].empty(); }
 
-
-
 private:
     int PositionToIndex (float x, float y) const;
     bool IsValidIndex(int Index) const;

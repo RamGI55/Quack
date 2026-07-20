@@ -22,13 +22,13 @@ enum ELaneType
 struct LaneComponent
 {
     int RowIndex;
+    int MaxTraffics;
     float Direction;
     float MinSpeed;
     float MaxSpeed;
-    float TimeUntilNextSpawn = 0.f;
-    float LaneSize;
+    float TimeUntilNextSpawn = 0.0f;
+    float LaneSize = 64.0f;
     ELaneType LaneType;
     std::string TextureKey;
-
 };
 #endif //DUCKDUCKROAD_LANECOMPONENT_H

@@ -75,6 +75,7 @@ void GameModeSystem::GameOverEvent(Entity inGamestateEntity, Coordinator& coordi
 
 void GameModeSystem::ClearEvent(Coordinator& coordinator)
 {
+
 }
 
 void GameModeSystem::InitialiseGameEvents(Entity inGameruleEntity, Entity inGamestateEntity, Coordinator& coordinator)

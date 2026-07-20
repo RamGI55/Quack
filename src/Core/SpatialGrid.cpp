@@ -68,10 +68,10 @@ void SpatialGrid::Update(Entity InEntity, const sf::FloatRect& BoundingBox)
 
     if (!IsValidIndex(newIdx))
     {
+
         Remove(InEntity);
         return;
     }
-
 
     auto it = mEntityToCell.find(InEntity);
     if (it == mEntityToCell.end())
@@ -107,7 +107,7 @@ std::vector<Entity> SpatialGrid::GetNearby(const sf::FloatRect& BoundingBox) con
     int centerCellX = static_cast<int>(centre.x / mCellSize);
     int centerCellY = static_cast<int>(centre.y / mCellSize);
 
-    // Check 3x3 area around center cell
+    // Check 3x3 area around center cell - bug if the entity coll
     for (int dy = -1; dy <= 1; dy++)
     {
         for (int dx = -1; dx <= 1; dx++)
@@ -128,8 +128,12 @@ std::vector<Entity> SpatialGrid::GetNearby(const sf::FloatRect& BoundingBox) con
             }
         }
     }
-
     return result;
+}
+
+std::vector<int> SpatialGrid::GetOverlappingCells(const sf::FloatRect& BoundingBox) const
+{
+
 }
 
 void SpatialGrid::Clear()
