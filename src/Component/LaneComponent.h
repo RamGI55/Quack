@@ -11,12 +11,12 @@
 
 enum ELaneType
 {
-    None    = 0,
-    Cars    = 1 << 0,
-    Trains  = 1 << 1,
-    Water   = 1 << 2,
-    Safe    = 1 << 3,
-    Goal    = 1 << 4,
+    None,
+    Cars,
+    Trains,
+    Water,
+    Safe,
+    Goal
 };
 
 struct LaneComponent

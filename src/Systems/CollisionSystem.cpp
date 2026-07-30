@@ -60,14 +60,14 @@ void CollisionSystem::Update(float dt, Coordinator &coordinator)
                     const auto& boxA = collisionA.CollisionRect;
                     const auto& boxB = bruteCollisionB.CollisionRect;
                     std::cout << "[AABB HIT / GRID MISS] "
-                              << "entityA=" << entityA
-                              << " boxA=(" << boxA.position.x << "," << boxA.position.y
-                              << " " << boxA.size.x << "x" << boxA.size.y << ")"
-                              << " entityB=" << entityB
-                              << " boxB=(" << boxB.position.x << "," << boxB.position.y
-                              << " " << boxB.size.x << "x" << boxB.size.y << ")"
-                              << " overlap=(" << overlap->position.x << "," << overlap->position.y
-                              << " " << overlap->size.x << "x" << overlap->size.y << ")\n";
+                            << "entityA=" << entityA
+                            << " boxA=(" << boxA.position.x << "," << boxA.position.y
+                            << " " << boxA.size.x << "x" << boxA.size.y << ")"
+                            << " entityB=" << entityB
+                            << " boxB=(" << boxB.position.x << "," << boxB.position.y
+                            << " " << boxB.size.x << "x" << boxB.size.y << ")"
+                            << " overlap=(" << overlap->position.x << "," << overlap->position.y
+                            << " " << overlap->size.x << "x" << overlap->size.y << ")\n";
                 }
             }
         }*/

@@ -6,12 +6,11 @@
 #define PLAYESTATECOMPONENT_H
 #include <string>
 
-struct PlayerStateComponent {
-
+struct PlayerStateComponent
+{
     int PlayerScore         = 0;
     int LivesRemaining      = 0;
-    std::string PlayerName  = "";
     float PlayTime          = 0.0f;
-
+    std::string PlayerName;
 };
 #endif //PLAYESTATECOMPONENT_H

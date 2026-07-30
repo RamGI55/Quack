@@ -9,7 +9,6 @@
 struct GameRuleComponent
 {
     float InitTime      = 0.0f;
-
 };
 
 struct FrogRuleComponent

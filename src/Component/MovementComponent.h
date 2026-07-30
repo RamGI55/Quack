@@ -6,16 +6,13 @@
 #define MOVEMENTCOMPONENT_H
 #include "SFML/System/Vector2.hpp"
 
-struct SmoothMovementComponent {
-
-    // TODO: For free movement.
+struct SmoothMovementComponent
+{
     float MovementSpeed  = 64.f;
-
 };
 
-struct GridMovementComponent {
-
-public:
+struct GridMovementComponent
+{
     float CellSize      = 64.f;
     float HopDuration   = 0.15f;
 
@@ -26,6 +23,5 @@ public:
 
     sf::Vector2i GridPosition;
     sf::Vector2i SpawnGridPosition;
-
 };
 #endif //MOVEMENTCOMPONENT_H

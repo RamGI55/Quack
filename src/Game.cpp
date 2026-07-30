@@ -27,7 +27,8 @@ Game::Game() :mWindow(sf::VideoMode({mWindowWidth, mWindowHeight}), "DuckDuckRoa
 void Game::Run()
 {
     Init();
-    while (mWindow.isOpen()) {
+    while (mWindow.isOpen())
+    {
         float dt = mClock.restart().asSeconds();
         ProcessEvents();
         Update(dt);
@@ -38,7 +39,6 @@ void Game::Run()
 void Game::Init()
 {
     // Initalise the coordinator
-
     mCoordinator.Init();
 
     AssetManager& assets = mAssetManager;
@@ -117,7 +117,6 @@ void Game::Init()
 
     // TODO: Hardcoded the asset loading, implements key generation algorithm in the asset loading.
 
-
     assets.Load<sf::Texture>("player_tex", "resources/Duck/duck-Sheet.png");
     assets.Load<sf::Texture>("car_tex", "resources/Coupe/coupe_blue.png");
     assets.Load<sf::Texture>("coup_green", "resources/Coupe/coupe_green.png");
@@ -127,6 +126,7 @@ void Game::Init()
     assets.Load<sf::Texture>("duck_road", "resources/Tile/Duck_Road.png");
     assets.Load<sf::Texture>("duck_safe", "resources/Tile/Duck_Safe.png");
     assets.Load<sf::Texture>("duck_train", "resources/Tile/Duck_Train.png");
+    assets.Load<sf::Texture>("duck_water", "resources/Tile/Duck_Water.png");
     assets.Load<sf::SoundBuffer>("sound_quack", "resources/Sound/sound_quack.mp3");
     assets.Load<sf::SoundBuffer>("sound_quack2", "resources/Sound/sound_quack2.mp3");
     assets.Load<sf::SoundBuffer>("sound_dead", "resources/Sound/sound_dead.mp3");
@@ -165,7 +165,9 @@ void Game::Init()
     col.Mask  = static_cast<uint32_t>(QKCollisionType::Player);
 
     SpriteComponent carSprite;
-    carSprite.setTexture(assets.Get<sf::Texture>("car_tex"));
+    std::shared_ptr<sf::Texture> carTexture = assets.Get<sf::Texture>("car_tex");
+    carSprite.Texture = carTexture;
+    carSprite.Sprite.emplace(*carTexture);
     const sf::Vector2u carTexSize = carSprite.Texture->getSize();
     carSprite.Sprite->setOrigin({carTexSize.x / 2.f, carTexSize.y / 2.f});
     carSprite.Sprite->setScale({50.f / carTexSize.x, 50.f / carTexSize.y});
@@ -186,8 +188,11 @@ void Game::Init()
     col2.Mask  = static_cast<uint32_t>(QKCollisionType::Player);
 
     SpriteComponent car2Sprite;
-    car2Sprite.setTexture(assets.Get<sf::Texture>("car_tex"));
+    std::shared_ptr<sf::Texture> car2Texture = assets.Get<sf::Texture>("car_tex");
+    car2Sprite.Texture = car2Texture;
+    car2Sprite.Sprite.emplace(*car2Texture);
     const sf::Vector2u car2TexSize = car2Sprite.Texture->getSize();
+    car2Sprite.rect = sf::IntRect({0, 0}, sf::Vector2i(car2TexSize.x, car2TexSize.y));
     car2Sprite.Sprite->setOrigin({car2TexSize.x / 2.f, car2TexSize.y / 2.f});
     car2Sprite.Sprite->setScale({50.f / car2TexSize.x, 50.f / car2TexSize.y});
     mCoordinator.AddComponent(car2, car2Sprite);

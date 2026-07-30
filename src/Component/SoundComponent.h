@@ -6,7 +6,6 @@
 #define DUCKDUCKROAD_SOUNDCOMPONENT_H
 #include <optional>
 #include <string>
-
 #include "SFML/Audio/Sound.hpp"
 
 struct SoundComponent
@@ -14,6 +13,5 @@ struct SoundComponent
     std::optional<sf::Sound> Sound;
     std::shared_ptr<sf::SoundBuffer> SoundBuffer;
     std::shared_ptr<sf::SoundBuffer> SecondSoundBuffer;
-
 };
 #endif //DUCKDUCKROAD_SOUNDCOMPONENT_H

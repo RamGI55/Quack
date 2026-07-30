@@ -68,7 +68,9 @@ public:
         playerCol.Visualised = true;
 
         SpriteComponent spriteCom;
-        spriteCom.setTexture(mAssetManager.Get<sf::Texture>(inEntityDef.keyTexture));
+        std::shared_ptr<sf::Texture> spriteTexture = mAssetManager.Get<sf::Texture>(inEntityDef.keyTexture);
+        spriteCom.Texture = spriteTexture;
+        spriteCom.Sprite.emplace(*spriteTexture);
         const sf::Vector2u spriteSize = spriteCom.Texture->getSize();
         spriteCom.Sprite->setOrigin({(float)inEntityDef.spawnX, (float)inEntityDef.spawnY});
         spriteCom.Sprite->setScale({64.f / spriteSize.x, 64.f / spriteSize.y});
@@ -122,8 +124,11 @@ public:
         vehicleCol.Visualised = true;
 
         SpriteComponent spriteCom;
-        spriteCom.setTexture(mAssetManager.Get<sf::Texture>(inEntityDef.keyTexture));
+        std::shared_ptr<sf::Texture> spriteTexture = mAssetManager.Get<sf::Texture>(inEntityDef.keyTexture);
+        spriteCom.Texture = spriteTexture;
+        spriteCom.Sprite.emplace(*spriteTexture);
         const sf::Vector2u spriteSize = spriteCom.Texture->getSize();
+        spriteCom.rect = sf::IntRect({0, 0}, sf::Vector2i(spriteSize.x, spriteSize.y));
         spriteCom.Sprite->setOrigin({(float)inEntityDef.spawnX, (float)inEntityDef.spawnY});
         spriteCom.Sprite->setScale({64.f / spriteSize.x, 64.f / spriteSize.y});
         mCoordinator.AddComponent(vehicle, spriteCom);

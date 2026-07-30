@@ -8,7 +8,8 @@
 #include "../Core/System.h"
 
 
-class GridMovementSystem : public System{
+class GridMovementSystem : public System
+{
 public:
     GridMovementSystem(SystemManager* manager) {}
     ~GridMovementSystem() {}

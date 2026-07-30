@@ -137,7 +137,6 @@ private:
         return true;
     }
 
-
     template<>
     inline std::shared_ptr<sf::Texture> AssetManager::GetFallback<sf::Texture>()
     {

@@ -25,11 +25,6 @@ public:
     void GameOverEvent(Entity inGamestateEntity, Coordinator& coordinator);
     void ClearEvent(Coordinator& coordinator);
     void InitialiseGameEvents(Entity inGameruleEntity, Entity inGamestateEntity, Coordinator& coordinator);
-
-
-private:
-
-
 };
 
 #endif //DUCKDUCKROAD_GAMEMODESYSTEM_H

@@ -7,10 +7,10 @@
 
 enum EVehicleType
 {
-    Default  = 0,
-    Small = 1 << 0,
-    Train = 1 << 1,
-    Log   = 1 << 2,
+    Default,
+    Small,
+    Train,
+    Log
 };
 
 struct VehicleComponent

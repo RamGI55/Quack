@@ -18,7 +18,7 @@
 #include "Systems/MovementSystem.h"
 #include "Systems/TrafficSpawnSystem.h"
 
-    class Game
+class Game
 {
 public:
     Game();
@@ -29,7 +29,6 @@ public:
     void Render();
 
 private:
-
     unsigned int mWindowWidth = 1920u;
     unsigned int mWindowHeight = 1080u;
     float mGameViewWidth = 1600.0f;

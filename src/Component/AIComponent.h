@@ -7,7 +7,5 @@
 
 struct AIComponent
 {
-
-
 };
 #endif //DUCKDUCKROAD_AICOMPONENT_H

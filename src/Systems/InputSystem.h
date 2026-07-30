@@ -21,9 +21,6 @@ public:
     void init();
     void UpdateState(ActionState& state, bool down, float dt);
     void Update(float dt, Coordinator& coordinator);
-
-private:
-
 };
 
 
