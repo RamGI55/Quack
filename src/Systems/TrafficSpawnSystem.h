@@ -28,8 +28,6 @@ public:
     void ProcessLaneSpawn(float dt, Coordinator& coordinator, AssetManager& assets);
 
 private:
-    std::vector<Entity> OnReadyTraffics;
-    int onReadyPoolSize = 100;
 };
 
 

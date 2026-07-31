@@ -18,7 +18,6 @@ TrafficSpawnSystem::~TrafficSpawnSystem()
 
 void TrafficSpawnSystem::Init(float WindowWith, float WindowHeight, AssetManager& assets, Coordinator& coordinator)
 {
-    VehicleFactory pooledVehicle(coordinator, assets);
 
 }
 
@@ -27,7 +26,6 @@ void TrafficSpawnSystem::Update(const float dt, SystemManager& manager, Coordina
     for (auto entity : Entities)
     {
         auto& LaneComponent = coordinator.GetComponent<::LaneComponent>(entity);
-
 
 
     }

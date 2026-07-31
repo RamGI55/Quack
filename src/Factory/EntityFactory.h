@@ -39,7 +39,6 @@ public:
     virtual ~EntityFactory() = default;
     virtual Entity Create(EntityDef& inEntityDef) = 0;
 
-
 protected:
     Coordinator& mCoordinator;
     AssetManager& mAssetManager;
@@ -56,7 +55,8 @@ public:
 
         sf::Vector2i spawnGrid = {inEntityDef.spawnX, inEntityDef.spawnY};
         cellSize = inEntityDef.cellSize;
-        sf::Vector2f startPos = {
+        sf::Vector2f startPos =
+        {
             spawnGrid.x * cellSize + cellSize / 2,
             spawnGrid.y * cellSize + cellSize / 2
         };
@@ -94,10 +94,8 @@ public:
     }
 
 private:
-    // TODO: Delete it, factory cannot have state.
     float cellSize = 64.f;
     sf::Vector2f spawnPos;
-
 };
 
 
@@ -110,7 +108,8 @@ public:
         Entity vehicle = mCoordinator.CreateEntity();
         sf::Vector2i spawnGrid = {inEntityDef.spawnX, inEntityDef.spawnY};
         cellSize = inEntityDef.cellSize;
-        sf::Vector2f startPos = {
+        sf::Vector2f startPos =
+        {
             spawnGrid.x * cellSize + cellSize / 2,
             spawnGrid.y * cellSize + cellSize / 2
         };

@@ -116,6 +116,7 @@ void Game::Init()
     EntityDef CarDef {.type = "car", .spawnX = 550, .spawnY = 150, .cellSize = 64.f};
 
     // TODO: Hardcoded the asset loading, implements key generation algorithm in the asset loading.
+    // Does have any good idea to sorting thoese assets?
 
     assets.Load<sf::Texture>("player_tex", "resources/Duck/duck-Sheet.png");
     assets.Load<sf::Texture>("car_tex", "resources/Coupe/coupe_blue.png");
@@ -137,6 +138,11 @@ void Game::Init()
     assets.Load<sf::SoundBuffer>("sound_gangnamahh", "resources/Sound/sound_gangnamFast.mp3");
     assets.Load<sf::SoundBuffer>("sound_train", "resources/Sound/sound_train.mp3");
     assets.Load<sf::Font>("font_main", "resources/Font/PixelifySans-Regular.ttf");
+    assets.Load<sf::Texture>("duck_block", "resources/Tile/Duck_Block.png");
+    assets.Load<sf::Texture>("duck_Road", "resources/Tile/Duck_Road.png");
+    assets.Load<sf::Texture>("duck_Safe", "resources/Tile/Duck_Safe.png");
+    assets.Load<sf::Texture>("duck_train", "resources/Tile/Duck_Train.png");
+    assets.Load<sf::Texture>("duck_water", "resources/Tile/Duck_Water.png");
 
     assets.Get<sf::Texture>("duck_road")->setRepeated(true);
 

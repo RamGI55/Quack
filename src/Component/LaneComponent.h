@@ -26,7 +26,6 @@ struct LaneComponent
     float Direction;
     float MinSpeed;
     float MaxSpeed;
-    float TimeUntilNextSpawn = 0.0f;
     float LaneSize = 64.0f;
     ELaneType LaneType;
     std::string TextureKey;
