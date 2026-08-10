@@ -4,6 +4,11 @@
 
 #include "Game.h"
 
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
 #include "Component/AnimationComponent.h"
 #include "Component/GameStateComponent.h"
 #include "Component/InputComponent.h"
@@ -15,6 +20,7 @@
 #include "Component/TransformComponent.h"
 #include "Component/VelocityComponent.h"
 #include "Factory/EntityFactory.h"
+#include "Factory/LaneFactory.h"
 #include "SFML/Graphics/Text.hpp"
 #include "Systems/RenderSystem.h"
 #include "Utils/CollisionUtils.h"
@@ -30,10 +36,14 @@ void Game::Run()
     while (mWindow.isOpen())
     {
         float dt = mClock.restart().asSeconds();
+        mLastDt = dt;
+        ++mFrameCount;
+        mTotalRunTime += dt;
         ProcessEvents();
         Update(dt);
         Render();
     }
+    PrintDebugSummary();
 }
 
 void Game::Init()
@@ -73,6 +83,8 @@ void Game::Init()
 {1.f - 2.f * mMarginX / mWindowWidth, 1.f - 2.f * mMarginY / mWindowHeight}));
 
     mCollisionSystem->Init(64.f, mGameViewWidth, mGameViewHeight);
+    mTrafficSpawnSystem->Init(mGameViewWidth, mGameViewHeight, assets, mCoordinator);
+    mTrafficSpawnSystem->SetStressTestUncapped(true);
 
     Signature inputSig;
     inputSig.set(mCoordinator.GetComponentType<InputComponent>());
@@ -143,8 +155,57 @@ void Game::Init()
     assets.Load<sf::Texture>("duck_Safe", "resources/Tile/Duck_Safe.png");
     assets.Load<sf::Texture>("duck_train", "resources/Tile/Duck_Train.png");
     assets.Load<sf::Texture>("duck_water", "resources/Tile/Duck_Water.png");
+    assets.Load<sf::Texture>("duck_goal", "resources/Tile/Duck_Goal.png");
+    assets.Load<sf::Texture>("duck_goalOccup", "resources/Tile/Duck_GoalOccup.png");
 
     assets.Get<sf::Texture>("duck_road")->setRepeated(true);
+
+    // Grid: 25 columns x 16 rows of 64px cells (mGameViewWidth x mGameViewHeight).
+    // Row 0 (top) is the goal row - built as discrete cells further down (goalFactory/wallFactory).
+    // Row 15 (bottom) is the Safe start row. Middle rows are placeholder Cars lanes,
+    // except one Water lane so the lethal-hazard collision path has something to hit.
+    constexpr int kColumns  = 25;
+    constexpr int kRows     = 16;
+    constexpr int kWaterRow = 8;
+
+    LaneFactory laneFactory(mCoordinator, assets);
+
+    // Stress-test knob: every Cars row requests up to kMaxTraffics vehicles. With
+    // SetStressTestUncapped(true) above, TrafficSpawnSystem::GetLaneCapacity skips the
+    // crossability clamp entirely, so kMaxTraffics = MAX_ENTITIES pushes concurrent vehicles
+    // as close to MAX_ENTITIES as the shared entity budget (living - safety margin, see
+    // TrafficSpawnSystem::FillPool) allows - same target as the pre-pooling stress test, now
+    // exercising the pool-fill + recycle path instead of continuous create/destroy.
+    constexpr int   kMaxTraffics = 214; // 14 Cars rows * 214 ~= 3000 total - max-stress comparison run
+    constexpr float kMinSpeed    = 150.f;
+    constexpr float kMaxSpeed    = 650.f;
+
+    for (int row = 1; row < kRows - 1; ++row)
+    {
+        const bool isWaterRow = (row == kWaterRow);
+        const ELaneType rowType = ELaneType::Cars;
+        const std::string rowTexture = isWaterRow ? "duck_train" : "duck_road";
+        const float direction = (row % 2 == 0) ? 1.f : -1.f;
+
+        for (int col = 0; col < kColumns; ++col)
+        {
+            laneFactory.Create({
+                .RowIndex = row,
+                .Column = col,
+                .LaneType = rowType,
+                .TextureKey = rowTexture,
+                .MaxTraffics = kMaxTraffics,
+                .MinSpeed = kMinSpeed,
+                .MaxSpeed = kMaxSpeed,
+                .Direction = direction
+            });
+        }
+    }
+
+    for (int col = 0; col < kColumns; ++col)
+    {
+        laneFactory.Create({.RowIndex = kRows - 1, .Column = col, .LaneType = ELaneType::Safe, .TextureKey = "duck_safe"});
+    }
 
     mGameRuleEntity = mCoordinator.CreateEntity();
     mCoordinator.AddComponent(mGameRuleEntity, GameRuleComponent{.InitTime = 300.f});
@@ -220,16 +281,26 @@ void Game::Init()
     PlayerFactory player1(mCoordinator, assets);
     mPlayer = player1.Create(playerDef);
 
-    // Goal strip along the top of the screen - duck reaching it scores.
-    Entity goal = mCoordinator.CreateEntity();
-    AABBCollisionComponent goalCol;
-    goalCol.CollisionRect.size = { static_cast<float>(mWindowWidth), 64.f };
-    goalCol.Layer    = static_cast<uint32_t>(QKCollisionType::Goal);
-    goalCol.Mask     = static_cast<uint32_t>(QKCollisionType::Player);
-    goalCol.IsStatic = false;
+    // Goal row (RowIndex 0, top): 5 evenly-spaced goal cells score, walls fill the gaps between them.
+    GoalFactory goalFactory(mCoordinator, assets);
+    WallFactory wallFactory(mCoordinator, assets);
+    constexpr int kGoalColumns[] = {2, 7, 12, 17, 22};
 
-    mCoordinator.AddComponent(goal, TransformComponent{.Position = {mWindowWidth /2.0f , 32.f}});
-    mCoordinator.AddComponent(goal, goalCol);
+    for (int col = 0; col < kColumns; ++col)
+    {
+        const bool isGoalColumn = std::find(std::begin(kGoalColumns), std::end(kGoalColumns), col) != std::end(kGoalColumns);
+        EntityDef cellDef {.spawnX = col, .spawnY = 0, .cellSize = 64.f, .keyTexture = "duck_block"};
+        EntityDef goalDef {.spawnX = col, .spawnY = 0, .cellSize = 64.f, .keyTexture = "duck_goal"};
+
+        if (isGoalColumn)
+        {
+            goalFactory.Create(goalDef);
+        }
+        else
+        {
+            wallFactory.Create(cellDef);
+        }
+    }
 }
 
 void Game::ProcessEvents()
@@ -254,26 +325,53 @@ void Game::Update(float dt)
     
     if (gameState.state != GameState::GameOver)
     {
+        mTrafficSpawnSystem->Update(dt, mCoordinator);
         mGridMovementSystem->Update(dt, mCoordinator);
         mMovementSystem->Update(dt, mCoordinator);
         mCollisionSystem->Update(dt, mCoordinator);
         mAnimationSystem->Update(dt, mCoordinator);
         mGameModeSystem->Update(dt, mCoordinator);
 
-        for (const auto& event : mCollisionSystem->GetCollisionEvent())
+        const uint32_t playerLayer  = static_cast<uint32_t>(QKCollisionType::Player);
+        const uint32_t enemyLayer   = static_cast<uint32_t>(QKCollisionType::Enemy);
+        const uint32_t goalLayer    = static_cast<uint32_t>(QKCollisionType::Goal);
+        const uint32_t terrainLayer = static_cast<uint32_t>(QKCollisionType::Terrain);
+        const uint32_t logLayer     = static_cast<uint32_t>(QKCollisionType::Log);
+        const uint32_t blockedLayer = static_cast<uint32_t>(QKCollisionType::Blocked);
+
+        // Log outranks Terrain: a pawn standing on a Log this frame is never drowned by the
+        // Water tile underneath it, even though both events fire for the same pawn.
+        const auto& events = mCollisionSystem->GetCollisionEvent();
+        auto isPlayerOnLog = [&](Entity pawn)
         {
-            const uint32_t playerLayer = static_cast<uint32_t>(QKCollisionType::Player);
-            const uint32_t enemyLayer  = static_cast<uint32_t>(QKCollisionType::Enemy);
-            const uint32_t goalLayer   = static_cast<uint32_t>(QKCollisionType::Goal);
+            for (const auto& e : events)
+            {
+                bool matchesLog = (e.LayerA == playerLayer && e.LayerB == logLayer)
+                                || (e.LayerA == logLayer && e.LayerB == playerLayer);
+                if (matchesLog && ((e.LayerA == playerLayer ? e.EntityA : e.EntityB) == pawn))
+                {
+                    return true;
+                }
+            }
+            return false;
+        };
 
-            bool isPlayerVsEnemy = (event.LayerA == playerLayer && event.LayerB == enemyLayer)
-                                || (event.LayerA == enemyLayer && event.LayerB == playerLayer);
-            bool isPlayerVsGoal  = (event.LayerA == playerLayer && event.LayerB == goalLayer)
-                                || (event.LayerA == goalLayer && event.LayerB == playerLayer);
+        for (const auto& event : events)
+        {
+            bool isPlayerVsEnemy   = (event.LayerA == playerLayer && event.LayerB == enemyLayer)
+                                  || (event.LayerA == enemyLayer && event.LayerB == playerLayer);
+            bool isPlayerVsGoal    = (event.LayerA == playerLayer && event.LayerB == goalLayer)
+                                  || (event.LayerA == goalLayer && event.LayerB == playerLayer);
+            bool isPlayerVsTerrain = (event.LayerA == playerLayer && event.LayerB == terrainLayer)
+                                  || (event.LayerA == terrainLayer && event.LayerB == playerLayer);
 
-            if (isPlayerVsEnemy)
+            if (isPlayerVsEnemy || isPlayerVsTerrain)
             {
                 Entity pawn = (event.LayerA == playerLayer) ? event.EntityA : event.EntityB;
+                if (isPlayerVsTerrain && isPlayerOnLog(pawn))
+                {
+                    continue; // Log takes priority over Water - not lethal.
+                }
                 mGameModeSystem->LifeLostEvent(mGameStateEntity, mCoordinator);
                 mGridMovementSystem->ResetToSpawn(pawn, mCoordinator);
                 mTestSound.emplace(*mAssetManager.Get<sf::SoundBuffer>("sound_dead"));
@@ -283,10 +381,31 @@ void Game::Update(float dt)
             else if (isPlayerVsGoal)
             {
                 Entity pawn = (event.LayerA == playerLayer) ? event.EntityA : event.EntityB;
+                Entity goal = (event.LayerA == playerLayer) ? event.EntityB : event.EntityA;
+
                 mGameModeSystem->DuckSavedEvent(mGameStateEntity, mCoordinator);
                 mGridMovementSystem->ResetToSpawn(pawn, mCoordinator);
                 mGoalSound.emplace(*mAssetManager.Get<sf::SoundBuffer>("sound_gangnamahh"));
                 mGoalSound->play();
+
+                // A filled goal can't be scored twice - it becomes a wall, same as any other Blocked cell.
+                mCoordinator.GetComponent<AABBCollisionComponent>(goal).Layer = blockedLayer;
+
+                // Chimney-smoke animation on the filled house. No art exists yet - "goal_smoke" resolves
+                // to AssetManager's fallback texture until a real sprite sheet is Load()'d under that key;
+                // FrameSize/FrameCount below are placeholders, update them to match the real sheet's grid.
+                SpriteComponent smokeSprite;
+                std::shared_ptr<sf::Texture> smokeTexture = mAssetManager.Get<sf::Texture>("duck_goalOccup");
+                smokeSprite.Texture = smokeTexture;
+                smokeSprite.Sprite.emplace(*smokeTexture);
+                mCoordinator.AddComponent(goal, smokeSprite);
+                mCoordinator.AddComponent(goal, AnimationComponent{.FrameSize = {64, 64}, .Row = 0, .FrameCount = 4, .FrameDuration = 0.15f});
+            }
+            else if ((event.LayerA == playerLayer && event.LayerB == blockedLayer)
+                    || (event.LayerA == blockedLayer && event.LayerB == playerLayer))
+            {
+                Entity pawn = (event.LayerA == playerLayer) ? event.EntityA : event.EntityB;
+                mGridMovementSystem->CancelHop(pawn, mCoordinator);
             }
         }
     }
@@ -306,7 +425,8 @@ void Game::Render()
     mWindow.draw(boundary);
 
     mWindow.setView(mGameView);
-    mRenderSystem->update(mWindow, mCoordinator);
+    const sf::FloatRect viewBounds(mGameView.getCenter() - mGameView.getSize() / 2.0f, mGameView.getSize());
+    mRenderSystem->update(mWindow, mCoordinator, viewBounds);
 
     if (bDebug == true)
     {
@@ -329,6 +449,7 @@ void Game::Render()
                 case QKCollisionType::Terrain: return "Terrain";
                 case QKCollisionType::Blocked: return "Blocked";
                 case QKCollisionType::Goal:    return "Goal";
+                case QKCollisionType::Log:     return "Log";
                 default:                       return "Default";
             }
         };
@@ -349,6 +470,60 @@ void Game::Render()
     mWindow.draw(hudText);
     mWindow.draw(scoreText);
 
+    const int fps = mLastDt > 0.f ? static_cast<int>(1.f / mLastDt) : 0;
+    sf::Text trafficText(*mAssetManager.Get<sf::Font>("font_main"),
+        "CARS: " + std::to_string(mTrafficSpawnSystem->GetActiveVehicleCount()) +
+        "  SPAWN/S: " + std::to_string(mTrafficSpawnSystem->GetSpawnsPerSecond()) +
+        "  DESPAWN/S: " + std::to_string(mTrafficSpawnSystem->GetDespawnsPerSecond()) +
+        "  FPS: " + std::to_string(fps), 24);
+    trafficText.setFillColor(sf::Color::Yellow);
+    trafficText.setPosition({10.f, 90.f});
+    mWindow.draw(trafficText);
+
+    sf::Text entityText(*mAssetManager.Get<sf::Font>("font_main"),
+        "ENTITIES: " + std::to_string(mCoordinator.GetLivingEntityCount()) + " / " + std::to_string(MAX_ENTITIES), 24);
+    entityText.setFillColor(sf::Color::Yellow);
+    entityText.setPosition({10.f, 120.f});
+    mWindow.draw(entityText);
+
+    sf::Text timingText(*mAssetManager.Get<sf::Font>("font_main"),
+        "DESTROY: " + std::to_string(static_cast<int>(mTrafficSpawnSystem->GetLastFrameDestroyMicros())) + "us/frame" +
+        "  SPAWN: " + std::to_string(static_cast<int>(mTrafficSpawnSystem->GetLastFrameSpawnMicros())) + "us/frame", 24);
+    timingText.setFillColor(sf::Color::Yellow);
+    timingText.setPosition({10.f, 150.f});
+    mWindow.draw(timingText);
+
     mWindow.display();
+}
+
+void Game::PrintDebugSummary() const
+{
+    const double averageFps = mTotalRunTime > 0.0 ? static_cast<double>(mFrameCount) / mTotalRunTime : 0.0;
+
+    std::ostringstream summary;
+    summary << "===== DuckDuckRoad session summary =====\n";
+    summary << "Frames rendered:    " << mFrameCount << "\n";
+    summary << "Total run time:     " << mTotalRunTime << "s\n";
+    summary << "Average FPS:        " << averageFps << "\n";
+    summary << "Vehicles spawned:   " << mTrafficSpawnSystem->GetTotalSpawned() << "\n";
+    summary << "Vehicles despawned: " << mTrafficSpawnSystem->GetTotalDespawned() << "\n";
+    summary << "Entities alive at exit: " << mCoordinator.GetLivingEntityCount() << " / " << MAX_ENTITIES << "\n";
+    summary << "Avg DestroyEntity cost: " << mTrafficSpawnSystem->GetAverageDestroyMicros() << "us"
+             << "  (max " << mTrafficSpawnSystem->GetMaxDestroyMicros() << "us)\n";
+    summary << "Avg spawn (VehicleFactory::Create) cost: " << mTrafficSpawnSystem->GetAverageSpawnMicros() << "us"
+             << "  (max " << mTrafficSpawnSystem->GetMaxSpawnMicros() << "us)\n";
+    summary << "=========================================\n";
+
+    std::cout << summary.str();
+
+    std::ofstream file("debug_summary.txt", std::ios::trunc);
+    if (file.is_open())
+    {
+        file << summary.str();
+    }
+    else
+    {
+        std::cerr << "[Game] Failed to write debug_summary.txt\n";
+    }
 }
 
