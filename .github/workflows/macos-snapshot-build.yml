@@ -1,0 +1,43 @@
+name: macOS Snapshot Builds
+
+on:
+  push:
+    branches:
+      - before-pool-snapshot
+      - after-pool-snapshot
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: macOS (${{ matrix.ref }})
+    runs-on: macos-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ref: [before-pool-snapshot, after-pool-snapshot]
+
+    steps:
+      - name: Checkout ${{ matrix.ref }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.ref }}
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Package
+        run: |
+          mkdir -p "dist/DuckDuckRoad-${{ matrix.ref }}"
+          cp -R build/bin/. "dist/DuckDuckRoad-${{ matrix.ref }}/"
+          chmod +x "dist/DuckDuckRoad-${{ matrix.ref }}/main"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuckDuckRoad-${{ matrix.ref }}-macos
+          path: dist/DuckDuckRoad-${{ matrix.ref }}
+          if-no-files-found: error
